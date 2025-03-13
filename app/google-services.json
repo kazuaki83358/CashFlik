@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "763368007277",
+    "project_id": "cash-flik",
+    "storage_bucket": "cash-flik.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763368007277:android:a96a48de032812a2284164",
+        "android_client_info": {
+          "package_name": "com.example.cashflik_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "763368007277-03rkubjbbtbh9ii1a8kp5iv3s62caf5i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9B013pyuYKxnt9sArqXrxosAFyCbOg58"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "763368007277-03rkubjbbtbh9ii1a8kp5iv3s62caf5i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
