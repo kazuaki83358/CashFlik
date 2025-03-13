@@ -6,6 +6,7 @@ import androidx.activity.addCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -19,20 +20,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.Role
 import com.example.cashflik_app.R
 import com.example.cashflik_app.ui.theme.CustomBlueColor
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.semantics.Role
-import androidx.compose.foundation.clickable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
+fun LoginPage(
+    onSignupClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit,
+    onLoginSuccess: () -> Unit // Add this parameter
+) {
     val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-    // Handle back press
     BackPressHandler(onBackPressedDispatcher)
 
     Column(
@@ -42,19 +44,14 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        // Top Section (Logo and Title)
-        Column(
+        // Top Section (Logo)
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logo",
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 60.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo), // Replace with your logo
-                contentDescription = "Logo",
-                modifier = Modifier.size(140.dp)
-            )
-        }
+                .size(140.dp)
+                .padding(top = 60.dp)
+        )
 
         // Login Card
         Card(
@@ -62,9 +59,7 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
                 .fillMaxWidth()
                 .padding(16.dp)
                 .clip(RoundedCornerShape(16.dp)),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFFFFFFF) // Changed card color
-            )
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -72,18 +67,13 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
             ) {
                 Text(
                     text = "LOGIN HERE",
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
+                    style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
+
                 Text(
-                    text = "Welcome back you've been missed!",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    ),
+                    text = "Welcome back! You've been missed.",
+                    style = TextStyle(fontSize = 14.sp, color = Color.Gray),
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -93,16 +83,21 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
                     value = mobileNumber,
                     onValueChange = { mobileNumber = it },
                     label = { Text("Mobile Number") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    leadingIcon = { // Changed to leadingIcon
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    leadingIcon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_phone), // Replace with your phone icon
+                            painter = painterResource(id = R.drawable.ic_phone),
                             contentDescription = "Phone Icon",
-                            modifier = Modifier.size(24.dp) // Adjusted icon size
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        cursorColor = Color.Black,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = Color.Gray
+                    )
                 )
 
                 // Password Input
@@ -111,80 +106,70 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Password") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                     visualTransformation = PasswordVisualTransformation(),
-                    leadingIcon = { // Changed to leadingIcon
+                    leadingIcon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_lock), // Replace with your lock icon
+                            painter = painterResource(id = R.drawable.ic_lock),
                             contentDescription = "Lock Icon",
-                            modifier = Modifier.size(24.dp) // Adjusted icon size
+                            modifier = Modifier.size(24.dp)
                         )
-                    }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        cursorColor = Color.Black,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = Color.Gray
+                    )
                 )
 
-                // Forgot Password
+                // Forgot Password Link
                 Text(
-                    text = "Forgot Password",
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        color = Color.Blue
-                    ),
+                    text = "Forgot Password?",
+                    style = TextStyle(fontSize = 12.sp, color = Color.Blue),
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(bottom = 16.dp)
+                        .clickable(onClick = { onForgotPasswordClick() }, role = Role.Button)
                 )
 
                 // Login Button
                 Button(
-                    onClick = { /* Handle Login */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)) // Corrected
+                    onClick = {
+                        // TODO: Implement actual login logic here.
+                        // If login is successful, call onLoginSuccess.
+                        onLoginSuccess()
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                 ) {
                     Text(text = "Login", color = Color.White)
                 }
 
                 // Signup Link
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(text = "If You don't have an account? ")
-                    // Make Signup clickable
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Text(text = "Don't have an account? ")
                     Text(
                         text = "Signup",
                         style = TextStyle(color = Color.Blue, textDecoration = TextDecoration.Underline),
-                        modifier = Modifier.clickable(
-                            onClick = { onSignupClick() },
-                            role = Role.Button
-                        )
-
+                        modifier = Modifier.clickable(onClick = { onSignupClick() }, role = Role.Button)
                     )
                 }
 
-                // Social Login Options
+                // Social Login
                 Text(
                     text = "or continue with",
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    ),
+                    style = TextStyle(fontSize = 12.sp, color = Color.Gray),
                     modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                 )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    IconButton(onClick = { /* Handle Google Login */ }) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_google), // Replace with your Google icon
-                            contentDescription = "Google Login",
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
+
+                IconButton(onClick = { /* Handle Google Login */ }) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_google),
+                        contentDescription = "Google Login",
+                        modifier = Modifier.size(32.dp)
+                    )
                 }
             }
         }
@@ -195,14 +180,6 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
 fun BackPressHandler(onBackPressedDispatcher: OnBackPressedDispatcher?) {
     val context = LocalContext.current
     onBackPressedDispatcher?.addCallback(context as ComponentActivity) {
-        // Close the app when back is pressed
         context.finish()
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginPagePreview() {
-    // For preview, you might need to provide an empty lambda or a placeholder
-    LoginPage(onSignupClick = {})
 }
