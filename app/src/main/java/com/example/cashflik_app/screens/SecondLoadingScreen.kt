@@ -1,5 +1,6 @@
 package com.example.cashflik_app.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -34,9 +35,14 @@ fun SecondLoadingScreen(navController: NavController) {
     var currentPage by remember { mutableStateOf(0) } // State for the current page
     val pageCount = 3 // Number of loading screens/pages
 
+    // Prevent back button navigation
+    BackHandler {
+        // Do nothing, prevent back navigation
+    }
+
     // Simulate navigation after a delay (if necessary)
     LaunchedEffect(Unit) {
-        delay(6000) // Wait for 6 seconds before navigating to the next screen
+        delay(3000)
         navController.navigate("login") // Navigate to the login screen after delay
     }
 
@@ -109,10 +115,10 @@ fun SecondLoadingScreen(navController: NavController) {
                 .padding(bottom = 24.dp) // Add some padding
         )
 
-        // Simulate page changes (for demonstration) - Replace with your actual logic
+        // Simulate page changes with faster animation - Replace with your actual logic
         LaunchedEffect(Unit) {
             while (true) {
-                delay(2000) // Delay for 2 seconds
+                delay(1000) // Reduce delay to 1 second for faster page change
                 currentPage = (currentPage + 1) % pageCount
             }
         }
@@ -140,7 +146,7 @@ fun PageIndicator(
             // Use animated value for the dot width
             val animatedDotWidth by animateDpAsState(
                 targetValue = if (isActive) dotSize * activeWidthRatio else dotSize,
-                animationSpec = tween(durationMillis = 300, easing = LinearOutSlowInEasing)
+                animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing) // Faster animation
             )
 
             val dotColor = if (isActive) activeColor else inactiveColor

@@ -1,5 +1,6 @@
 package com.example.cashflik_app.screens
 
+import android.app.Activity
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.addCallback
@@ -30,9 +31,10 @@ import androidx.compose.foundation.clickable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
+fun SignupPage(onLoginClick: () -> Unit, onSignupClick: () -> Unit) { // Added onSignupClick
     val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-    // Handle back press
+    val context = LocalContext.current
+
     BackPressHandler(onBackPressedDispatcher)
 
     Column(
@@ -50,20 +52,20 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo), // Replace with your logo
+                painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo",
                 modifier = Modifier.size(140.dp)
             )
         }
 
-        // Login Card
+        // Signup Card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
                 .clip(RoundedCornerShape(16.dp)),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFFFFFFF) // Changed card color
+                containerColor = Color(0xFFFFFFFF)
             )
         ) {
             Column(
@@ -71,7 +73,7 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "LOGIN HERE",
+                    text = "CREATE NEW ACCOUNT",
                     style = TextStyle(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
@@ -87,6 +89,24 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
+                // Name Input
+                var name by remember { mutableStateOf("") }
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Name") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    leadingIcon = { // Changed to leadingIcon
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_person), // Updated icon
+                            contentDescription = "Person Icon",
+                            modifier = Modifier.size(24.dp) // Increased size
+                        )
+                    }
+                )
+
                 // Mobile Number Input
                 var mobileNumber by remember { mutableStateOf("") }
                 OutlinedTextField(
@@ -96,11 +116,11 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),
-                    leadingIcon = { // Changed to leadingIcon
+                    leadingIcon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_phone), // Replace with your phone icon
+                            painter = painterResource(id = R.drawable.ic_phone),
                             contentDescription = "Phone Icon",
-                            modifier = Modifier.size(24.dp) // Adjusted icon size
+                            modifier = Modifier.size(24.dp) // Increased size
                         )
                     }
                 )
@@ -115,94 +135,72 @@ fun LoginPage(onSignupClick: () -> Unit) { // Add onSignupClick callback
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),
                     visualTransformation = PasswordVisualTransformation(),
-                    leadingIcon = { // Changed to leadingIcon
+                    leadingIcon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_lock), // Replace with your lock icon
+                            painter = painterResource(id = R.drawable.ic_lock),
                             contentDescription = "Lock Icon",
-                            modifier = Modifier.size(24.dp) // Adjusted icon size
+                            modifier = Modifier.size(24.dp) // Increased size
                         )
                     }
                 )
 
-                // Forgot Password
-                Text(
-                    text = "Forgot Password",
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        color = Color.Blue
-                    ),
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(bottom = 16.dp)
+                // Confirm Password Input
+                var confirmPassword by remember { mutableStateOf("") }
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text("Confirm Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = PasswordVisualTransformation(),
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_lock),
+                            contentDescription = "Lock Icon",
+                            modifier = Modifier.size(24.dp) // Increased size
+                        )
+                    }
                 )
 
-                // Login Button
+                // Signup Button
                 Button(
-                    onClick = { /* Handle Login */ },
+                    onClick = {
+                        onSignupClick() // Call the onSignupClick callback
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)) // Corrected
+                        .padding(top = 16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                 ) {
-                    Text(text = "Login", color = Color.White)
+                    Text(text = "Signup", color = Color.White)
                 }
 
-                // Signup Link
+                // Login Link
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(text = "If You don't have an account? ")
-                    // Make Signup clickable
+                    Text(text = "Already have an account? ")
                     Text(
-                        text = "Signup",
+                        text = "Log in",
                         style = TextStyle(color = Color.Blue, textDecoration = TextDecoration.Underline),
                         modifier = Modifier.clickable(
-                            onClick = { onSignupClick() },
+                            onClick = {
+                                onLoginClick()
+                                // Do *not* finish the activity here!
+                            },
                             role = Role.Button
                         )
-
                     )
-                }
-
-                // Social Login Options
-                Text(
-                    text = "or continue with",
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    ),
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    IconButton(onClick = { /* Handle Google Login */ }) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_google), // Replace with your Google icon
-                            contentDescription = "Google Login",
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun BackPressHandler(onBackPressedDispatcher: OnBackPressedDispatcher?) {
-    val context = LocalContext.current
-    onBackPressedDispatcher?.addCallback(context as ComponentActivity) {
-        // Close the app when back is pressed
-        context.finish()
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
-fun LoginPagePreview() {
-    // For preview, you might need to provide an empty lambda or a placeholder
-    LoginPage(onSignupClick = {})
+fun SignupPagePreview() {
+    SignupPage(onLoginClick = {}, onSignupClick = {})
 }

@@ -5,13 +5,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.cashflik_app.screens.LoginPage
 import com.example.cashflik_app.screens.SecondLoadingScreen
 import com.example.cashflik_app.screens.FirstSplashScreen
+import com.example.cashflik_app.screens.SignupPage
+import com.example.cashflik_app.screens.OtpScreen
 import kotlinx.coroutines.delay
 import com.example.cashflik_app.ui.theme.CashflikAppTheme
 
@@ -30,9 +34,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route ?: "splash" // Default route
+
+    val context = LocalContext.current // ✅ Move this inside the @Composable function
 
     // This composable handles screen transitions
-    NavHost(navController = navController, startDestination = "splash") {
+    NavHost(navController = navController, startDestination = currentRoute) {
         composable("splash") {
             FirstSplashScreen(navController = navController)
         }
@@ -40,7 +48,29 @@ fun AppNavigation() {
             SecondLoadingScreen(navController = navController)
         }
         composable("login") {
-            LoginPage() // LoginPage doesn't need NavController in this case
+            LoginPage(onSignupClick = { navController.navigate("signup") })
+        }
+        composable("signup") {
+            SignupPage(
+                onLoginClick = { navController.navigate("login") },
+                onSignupClick = { navController.navigate("otp") }
+            )
+        }
+        composable("otp") {
+            OtpScreen(
+                onBackClick = { navController.popBackStack() },
+                onOtpVerified = { enteredOtp ->
+                    // Handle OTP verification logic (API call)
+                    val otpVerifiedSuccessfully = true // Replace with actual logic
+
+                    if (otpVerifiedSuccessfully) {
+                        // ✅ Use context safely inside the lambda
+                        (context as? ComponentActivity)?.finishAffinity()
+                    } else {
+                        // Handle OTP verification failure (e.g., show an error message)
+                    }
+                }
+            )
         }
     }
 }
