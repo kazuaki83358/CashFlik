@@ -3,9 +3,12 @@ package com.example.cashflik_app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -16,7 +19,7 @@ import com.example.cashflik_app.ui.theme.CashflikAppTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
             CashflikAppTheme {
                 AppNavigation()
@@ -31,7 +34,7 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: "splash"
 
-    val context = LocalContext.current
+    LocalContext.current // Unused, can remove if not needed.
 
     NavHost(navController = navController, startDestination = currentRoute) {
         composable("splash") {
@@ -42,69 +45,50 @@ fun AppNavigation() {
         }
         composable("login") {
             LoginPage(
-                onSignupClick = { navController.navigate("signup") },
+                navController = navController,
                 onForgotPasswordClick = { navController.navigate("forgotPassword") },
-                onLoginSuccess = { navController.navigate("home") } // Add onLoginSuccess
+                onLoginSuccess = { navController.navigate("home") }
             )
         }
         composable("signup") {
-            SignupPage(
-                onLoginClick = { navController.navigate("login") },
-                onSignupClick = { navController.navigate("otp") }
-            )
+            SignupPage(navController = navController)
         }
         composable("otp") {
-            OtpScreen(
-                onBackClick = { navController.popBackStack() },
-                onOtpVerified = { enteredOtp: String ->
-                    // TODO: Implement actual OTP verification logic here
-                    val otpVerifiedSuccessfully = true
-                    if (otpVerifiedSuccessfully) {
-                        (context as? ComponentActivity)?.finishAffinity()
-                    } else {
-                        // TODO: Handle OTP verification failure
-                    }
-                }
-            )
+            OtpScreen(navController = navController) {
+                navController.navigate("login")
+            }
         }
         composable("forgotPassword") {
-            ForgotPasswordScreen(
-                onBackClick = { navController.popBackStack() },
-                onSendClick = { mobileNumber ->
-                    navController.navigate("forgetOtp?mobile=$mobileNumber")
-                }
-            )
+            ForgotPasswordScreen(navController = navController) { mobileNumber ->
+                navController.navigate("forgetOtp/$mobileNumber")
+            }
         }
-        composable("forgetOtp?mobile={mobile}") { backStackEntry ->
+        composable("forgetOtp/{mobile}") { backStackEntry ->
             val mobileNumber = backStackEntry.arguments?.getString("mobile") ?: ""
             ForgotOtpScreen(
                 phoneNumber = mobileNumber,
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { navController.navigate("login") },
                 onOtpVerified = {
-                    // TODO: Implement actual OTP verification logic here
-                    val otpVerifiedSuccessfully = true
-                    if (otpVerifiedSuccessfully) {
-                        navController.navigate("createNewPassword")
-                    } else {
-                        // TODO: Handle OTP verification failure
+                    navController.navigate("createNewPassword") {
+                        popUpTo("forgotPassword") { inclusive = true }
                     }
                 }
             )
         }
         composable("createNewPassword") {
             CreateNewPasswordScreen(
-                onBackClick = { navController.popBackStack() },
+                navController = navController,
                 onSubmitClick = {
-                    // TODO: Implement actual password reset logic here (API call)
-                    // TODO: Handle password reset failure
-                    navController.navigate("passwordUpdated")
+                    navController.navigate("passwordUpdated") {
+                        popUpTo("createNewPassword") { inclusive = true }
+                    }
                 }
             )
         }
         composable("passwordUpdated") {
             PasswordUpdatedScreen(onLoginClick = { navController.navigate("login") })
         }
-        composable("home") { // Add home route
+        composable("home") {
             HomeScreen()
         }
     }

@@ -1,5 +1,6 @@
 package com.example.cashflik_app.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,17 +22,22 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.cashflik_app.R // Replace with your actual R file
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateNewPasswordScreen(
-    onBackClick: () -> Unit,
+    navController: NavController,
     onSubmitClick: () -> Unit // Change to a simple callback
 ) {
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
+
+    BackHandler {
+        navController.navigate("login")
+    }
 
     Column(
         modifier = Modifier
@@ -50,7 +56,7 @@ fun CreateNewPasswordScreen(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Back",
                 tint = Color.White,
-                modifier = Modifier.clickable { onBackClick() }
+                modifier = Modifier.clickable { navController.navigate("login") }
             )
         }
 
@@ -173,5 +179,5 @@ fun CreateNewPasswordScreen(
 
 @Composable
 fun CreateNewPasswordScreenPreview() {
-    CreateNewPasswordScreen(onBackClick = {}, onSubmitClick = {})
+    //removed preview as it requires navController
 }

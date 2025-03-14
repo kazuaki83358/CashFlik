@@ -1,5 +1,6 @@
 package com.example.cashflik_app.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -25,14 +25,19 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.cashflik_app.ui.theme.CustomBlueColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OtpScreen(onBackClick: () -> Unit, onOtpVerified: (String) -> Unit) {
+fun OtpScreen(navController: NavController, onOtpVerified: (String) -> Unit) {
     var otpValues by remember { mutableStateOf(List(4) { "" }) }
     val focusRequesters = List(4) { FocusRequester() } // Create FocusRequesters
     val focusManager = LocalFocusManager.current
+
+    BackHandler {
+        navController.navigate("signup")
+    }
 
     Column(
         modifier = Modifier
@@ -52,7 +57,7 @@ fun OtpScreen(onBackClick: () -> Unit, onOtpVerified: (String) -> Unit) {
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
                 tint = Color.White,
-                modifier = Modifier.clickable { onBackClick() }
+                modifier = Modifier.clickable { navController.navigate("signup") }
             )
         }
 
@@ -118,7 +123,8 @@ fun OtpScreen(onBackClick: () -> Unit, onOtpVerified: (String) -> Unit) {
                 Button(
                     onClick = {
                         val enteredOtp = otpValues.joinToString("")
-                        onOtpVerified(enteredOtp)
+                        //onOtpVerified(enteredOtp)
+                        navController.navigate("login")
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -149,5 +155,5 @@ fun OtpScreen(onBackClick: () -> Unit, onOtpVerified: (String) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun OtpScreenPreview() {
-    OtpScreen(onBackClick = {}, onOtpVerified = {})
+    //Removed preview since it requires navigation controller.
 }

@@ -24,15 +24,16 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.semantics.Role
+import androidx.navigation.NavController // Import NavController
 import com.example.cashflik_app.R
 import com.example.cashflik_app.ui.theme.CustomBlueColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginPage(
-    onSignupClick: () -> Unit,
+    navController: NavController, // Add NavController parameter
     onForgotPasswordClick: () -> Unit,
-    onLoginSuccess: () -> Unit // Add this parameter
+    onLoginSuccess: () -> Unit
 ) {
     val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     BackPressHandler(onBackPressedDispatcher)
@@ -153,7 +154,7 @@ fun LoginPage(
                     Text(
                         text = "Signup",
                         style = TextStyle(color = Color.Blue, textDecoration = TextDecoration.Underline),
-                        modifier = Modifier.clickable(onClick = { onSignupClick() }, role = Role.Button)
+                        modifier = Modifier.clickable(onClick = { navController.navigate("signup") }, role = Role.Button) // Use navController here
                     )
                 }
 

@@ -1,5 +1,6 @@
 package com.example.cashflik_app.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,15 +22,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.cashflik_app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForgotPasswordScreen(
-    onBackClick: () -> Unit,
+    navController: NavController,
     onSendClick: (String) -> Unit
 ) {
     var mobileNumber by remember { mutableStateOf("") }
+
+    BackHandler {
+        navController.navigate("login")
+    }
 
     Column(
         modifier = Modifier
@@ -47,7 +53,7 @@ fun ForgotPasswordScreen(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Back",
                 tint = Color.White,
-                modifier = Modifier.clickable { onBackClick() }
+                modifier = Modifier.clickable { navController.navigate("login") }
             )
         }
 

@@ -1,6 +1,6 @@
 package com.example.cashflik_app.screens
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,15 +21,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.cashflik_app.R
 import com.example.cashflik_app.ui.theme.CustomBlueColor
+import androidx.compose.ui.text.input.VisualTransformation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignupPage(onLoginClick: () -> Unit, onSignupClick: () -> Unit) {
-    val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-
-    BackPressHandler(onBackPressedDispatcher)
+fun SignupPage(navController: NavController) {
+    val context = LocalContext.current
+    var name by remember { mutableStateOf("") }
+    var mobileNumber by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -72,19 +76,42 @@ fun SignupPage(onLoginClick: () -> Unit, onSignupClick: () -> Unit) {
                 )
 
                 // Input Fields
-                var name by remember { mutableStateOf("") }
-                var mobileNumber by remember { mutableStateOf("") }
-                var password by remember { mutableStateOf("") }
-                var confirmPassword by remember { mutableStateOf("") }
-
-                InputField(value = name, label = "Name", icon = R.drawable.ic_person, onValueChange = { name = it })
-                InputField(value = mobileNumber, label = "Mobile Number", icon = R.drawable.ic_phone, onValueChange = { mobileNumber = it })
-                InputField(value = password, label = "Password", icon = R.drawable.ic_lock, isPassword = true, onValueChange = { password = it })
-                InputField(value = confirmPassword, label = "Confirm Password", icon = R.drawable.ic_lock, isPassword = true, onValueChange = { confirmPassword = it })
+                InputField(
+                    value = name,
+                    label = "Name",
+                    icon = R.drawable.ic_person,
+                    onValueChange = { name = it }
+                )
+                InputField(
+                    value = mobileNumber,
+                    label = "Mobile Number",
+                    icon = R.drawable.ic_phone,
+                    onValueChange = { mobileNumber = it }
+                )
+                InputField(
+                    value = password,
+                    label = "Password",
+                    icon = R.drawable.ic_lock,
+                    isPassword = true,
+                    onValueChange = { password = it }
+                )
+                InputField(
+                    value = confirmPassword,
+                    label = "Confirm Password",
+                    icon = R.drawable.ic_lock,
+                    isPassword = true,
+                    onValueChange = { confirmPassword = it }
+                )
 
                 // Signup Button
                 Button(
-                    onClick = { onSignupClick() },
+                    onClick = {
+                        if (password == confirmPassword) {
+                            navController.navigate("otp")
+                        } else {
+                            Toast.makeText(context, "Passwords do not match", Toast.LENGTH_LONG).show()
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
@@ -95,14 +122,16 @@ fun SignupPage(onLoginClick: () -> Unit, onSignupClick: () -> Unit) {
 
                 // Login Link
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(text = "Already have an account? ")
                     Text(
                         text = "Log in",
                         style = TextStyle(color = Color.Blue, textDecoration = TextDecoration.Underline),
-                        modifier = Modifier.clickable(onClick = onLoginClick, role = Role.Button)
+                        modifier = Modifier.clickable(onClick = { navController.navigate("login") }, role = Role.Button)
                     )
                 }
             }
@@ -110,6 +139,7 @@ fun SignupPage(onLoginClick: () -> Unit, onSignupClick: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputField(
     value: String,
@@ -118,23 +148,28 @@ fun InputField(
     isPassword: Boolean = false,
     onValueChange: (String) -> Unit
 ) {
-    (if (isPassword) PasswordVisualTransformation() else null)?.let {
-        OutlinedTextField(
+    OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
-        textStyle = TextStyle(color = Color.Black), // Ensuring text color is black
-        visualTransformation = it,
+        textStyle = TextStyle(color = Color.Black),
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         leadingIcon = {
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = label,
                 modifier = Modifier.size(24.dp)
             )
-        }
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            cursorColor = Color.Black,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = Color.Gray
+        )
     )
-    }
 }
