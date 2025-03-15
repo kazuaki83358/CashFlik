@@ -6,9 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -89,7 +86,16 @@ fun AppNavigation() {
             PasswordUpdatedScreen(onLoginClick = { navController.navigate("login") })
         }
         composable("home") {
-            HomeScreen()
+            HomeScreen(navController = navController) // Pass navController
+        }
+        composable("addReview") {
+            AddReviewScreen(navController = navController) // Pass navController
+        }
+        composable("reviewHistory") {
+            ReviewHistoryScreen(navController = navController) // Add ReviewHistoryScreen and pass navController
+        }
+        composable("wallet") {
+            WalletScreen(navController = navController) // Add WalletScreen and pass navController
         }
     }
 }
