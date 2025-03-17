@@ -41,10 +41,10 @@ fun HomeScreen(navController: NavController) {
     )
 
     val reviews = listOf(
-        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "26 Jun 2024 01:30 PM", "120"),
-        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "25 Jun 2024 03:30 PM", "120"),
-        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "25 Jun 2024 03:30 PM", "120"),
-        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "25 Jun 2024 03:30 PM", "120")
+        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "26 Jun 2024 01:30 PM", "120", 4.0f), // Added stars
+        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "25 Jun 2024 03:30 PM", "120", 4.0f),
+        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "25 Jun 2024 03:30 PM", "120", 4.0f),
+        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "25 Jun 2024 03:30 PM", "120", 4.0f)
     )
     Scaffold(
         bottomBar = {

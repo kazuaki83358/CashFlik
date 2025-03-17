@@ -4,19 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.cashflik_app.screens.*
 import com.example.cashflik_app.ui.theme.CashflikAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             CashflikAppTheme {
                 AppNavigation()
@@ -28,18 +26,16 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route ?: "splash"
+    NavHost(navController = navController, startDestination = "splash") { // Set splash as startDestination
 
-    LocalContext.current // Unused, can remove if not needed.
-
-    NavHost(navController = navController, startDestination = currentRoute) {
         composable("splash") {
             FirstSplashScreen(navController = navController)
         }
+
         composable("second_loading") {
             SecondLoadingScreen(navController = navController)
         }
+
         composable("login") {
             LoginPage(
                 navController = navController,
@@ -47,19 +43,23 @@ fun AppNavigation() {
                 onLoginSuccess = { navController.navigate("home") }
             )
         }
+
         composable("signup") {
             SignupPage(navController = navController)
         }
+
         composable("otp") {
             OtpScreen(navController = navController) {
                 navController.navigate("login")
             }
         }
+
         composable("forgotPassword") {
             ForgotPasswordScreen(navController = navController) { mobileNumber ->
                 navController.navigate("forgetOtp/$mobileNumber")
             }
         }
+
         composable("forgetOtp/{mobile}") { backStackEntry ->
             val mobileNumber = backStackEntry.arguments?.getString("mobile") ?: ""
             ForgotOtpScreen(
@@ -72,6 +72,7 @@ fun AppNavigation() {
                 }
             )
         }
+
         composable("createNewPassword") {
             CreateNewPasswordScreen(
                 navController = navController,
@@ -82,20 +83,54 @@ fun AppNavigation() {
                 }
             )
         }
+
         composable("passwordUpdated") {
             PasswordUpdatedScreen(onLoginClick = { navController.navigate("login") })
         }
+
         composable("home") {
-            HomeScreen(navController = navController) // Pass navController
+            HomeScreen(navController = navController)
         }
+
         composable("addReview") {
-            AddReviewScreen(navController = navController) // Pass navController
+            AddReviewScreen(navController = navController)
         }
+
         composable("reviewHistory") {
-            ReviewHistoryScreen(navController = navController) // Add ReviewHistoryScreen and pass navController
+            ReviewHistoryScreen(navController = navController)
         }
+
         composable("wallet") {
-            WalletScreen(navController = navController) // Add WalletScreen and pass navController
+            WalletScreen(navController = navController)
+        }
+
+        composable(
+            "reviewDetails/{title}/{description}/{image}/{date}/{points}/{stars}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("description") { type = NavType.StringType },
+                navArgument("image") { type = NavType.IntType },
+                navArgument("date") { type = NavType.StringType },
+                navArgument("points") { type = NavType.StringType },
+                navArgument("stars") { type = NavType.FloatType }
+            )
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val description = backStackEntry.arguments?.getString("description") ?: ""
+            val image = backStackEntry.arguments?.getInt("image") ?: R.drawable.ic_launcher_foreground
+            val date = backStackEntry.arguments?.getString("date") ?: ""
+            val points = backStackEntry.arguments?.getString("points") ?: ""
+            val stars = backStackEntry.arguments?.getFloat("stars") ?: 0f
+
+            ReviewDetailsScreen(
+                navController = navController,
+                title = title,
+                description = description,
+                image = image,
+                date = date,
+                points = points,
+                stars = stars
+            )
         }
     }
 }
