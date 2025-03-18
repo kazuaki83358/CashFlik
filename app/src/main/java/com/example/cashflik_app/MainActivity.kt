@@ -9,21 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.cashflik_app.screens.AddReviewScreen
-import com.example.cashflik_app.screens.CreateNewPasswordScreen
-import com.example.cashflik_app.screens.FirstSplashScreen
-import com.example.cashflik_app.screens.ForgotPasswordScreen
-import com.example.cashflik_app.screens.ForgotOtpScreen
-import com.example.cashflik_app.screens.HomeScreen
-import com.example.cashflik_app.screens.LoginPage
-import com.example.cashflik_app.screens.NotificationScreen
-import com.example.cashflik_app.screens.OtpScreen
-import com.example.cashflik_app.screens.PasswordUpdatedScreen
-import com.example.cashflik_app.screens.ReviewDetailsScreen
-import com.example.cashflik_app.screens.ReviewHistoryScreen
-import com.example.cashflik_app.screens.SecondLoadingScreen
-import com.example.cashflik_app.screens.SignupPage
-import com.example.cashflik_app.screens.WalletScreen
+import com.example.cashflik_app.screens.*
+import com.example.profile_screen.ProfileScreen // Import ProfileScreen
 import com.example.cashflik_app.ui.theme.CashflikAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -53,7 +40,12 @@ fun AppNavigation() {
             LoginPage(
                 navController = navController,
                 onForgotPasswordClick = { navController.navigate("forgotPassword") },
-                onLoginSuccess = { navController.navigate("home") }
+                onLoginSuccess = {
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true } // Clear back stack
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
@@ -63,7 +55,10 @@ fun AppNavigation() {
 
         composable("otp") {
             OtpScreen(navController = navController) {
-                navController.navigate("login")
+                navController.navigate("login") {
+                    popUpTo("otp") { inclusive = true }
+                    launchSingleTop = true
+                }
             }
         }
 
@@ -81,6 +76,7 @@ fun AppNavigation() {
                 onOtpVerified = {
                     navController.navigate("createNewPassword") {
                         popUpTo("forgotPassword") { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             )
@@ -92,13 +88,19 @@ fun AppNavigation() {
                 onSubmitClick = {
                     navController.navigate("passwordUpdated") {
                         popUpTo("createNewPassword") { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             )
         }
 
         composable("passwordUpdated") {
-            PasswordUpdatedScreen(onLoginClick = { navController.navigate("login") })
+            PasswordUpdatedScreen(onLoginClick = {
+                navController.navigate("login") {
+                    popUpTo("passwordUpdated") { inclusive = true }
+                    launchSingleTop = true
+                }
+            })
         }
 
         composable("home") {
@@ -117,7 +119,7 @@ fun AppNavigation() {
             WalletScreen(navController = navController)
         }
 
-        composable("notificationScreen") { // Added notification screen
+        composable("notificationScreen") {
             NotificationScreen(navController = navController)
         }
 
@@ -149,5 +151,16 @@ fun AppNavigation() {
                 stars = stars
             )
         }
+
+        // Add Profile Screen Route
+        composable("profileScreen") {
+            ProfileScreen(navController = navController) // Pass navController here
+        }
+
+        // Add Other Drawer Screen Routes
+        composable("aboutUsScreen") { AboutUsScreen() }
+        composable("termsConditionsScreen") { TermsConditionsScreen() }
+        composable("privacyPolicyScreen") { PrivacyPolicyScreen() }
+
     }
 }

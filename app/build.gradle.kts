@@ -66,4 +66,6 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:22.1.2")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0") // Or the latest version
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0") // Or the latest version for lifecycle-aware coroutines
 }

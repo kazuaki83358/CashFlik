@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +29,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.cashflik_app.R
 import com.example.cashflik_app.ui.theme.CustomBlueColor
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 data class Category(val name: String, val icon: Int)
 
@@ -40,30 +46,75 @@ fun HomeScreen(navController: NavController) {
         Category("Smart Watch", R.drawable.watch)
     )
 
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
     val reviews = listOf(
-        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "26 Jun 2024 01:30 PM", "120", 4.0f), // Added stars
-        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "25 Jun 2024 03:30 PM", "120", 4.0f),
-        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "25 Jun 2024 03:30 PM", "120", 4.0f),
-        Review("OnePlus 11R 5G", "Camera: Sensor: 50MP Main Camera with Sony IMX890", R.drawable.ic_launcher_foreground, "25 Jun 2024 03:30 PM", "120", 4.0f)
+        Review(
+            "OnePlus 11R 5G",
+            "Camera: Sensor: 50MP Main Camera with Sony IMX890",
+            R.drawable.ic_launcher_foreground,
+            "26 Jun 2024 01:30 PM",
+            "120",
+            4.0f
+        ),
+        Review(
+            "OnePlus 11R 5G",
+            "Camera: Sensor: 50MP Main Camera with Sony IMX890",
+            R.drawable.ic_launcher_foreground,
+            "25 Jun 2024 03:30 PM",
+            "120",
+            4.0f
+        ),
+        Review(
+            "OnePlus 11R 5G",
+            "Camera: Sensor: 50MP Main Camera with Sony IMX890",
+            R.drawable.ic_launcher_foreground,
+            "25 Jun 2024 03:30 PM",
+            "120",
+            4.0f
+        ),
+        Review(
+            "OnePlus 11R 5G",
+            "Camera: Sensor: 50MP Main Camera with Sony IMX890",
+            R.drawable.ic_launcher_foreground,
+            "25 Jun 2024 03:30 PM",
+            "120",
+            4.0f
+        )
     )
-    Scaffold(
-        bottomBar = {
-            BottomNavigation(navController = navController, currentRoute = "home") // Pass currentRoute
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val drawerWidth = screenWidth * 0.6f
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = { DrawerScreen(navController = navController, modifier = Modifier.width(drawerWidth)) }, // Pass navController here
+        content = {
+            Scaffold(
+                bottomBar = {
+                    BottomNavigation(navController = navController, currentRoute = "home")
+                }
+            ) { paddingValues ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFFF0F0F0))
+                        .verticalScroll(rememberScrollState())
+                        .padding(paddingValues)
+                ) {
+                    WelcomeSection(navController = navController, onProfileClick = { scope.launch { drawerState.open() } })
+                    UploadEarnSection()
+                    CategorySection(categories = categories)
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        MyReviewSection(reviews = reviews)
+                    }
+                }
+            }
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFF0F0F0))
-                .verticalScroll(rememberScrollState())
-                .padding(paddingValues)
-        ) {
-            WelcomeSection(navController = navController)
-            UploadEarnSection()
-            CategorySection(categories = categories)
-            MyReviewSection(reviews = reviews)
-        }
-    }
+    )
 }
 
 @Composable
@@ -77,7 +128,7 @@ fun UploadEarnSection() {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = R.drawable.reviewicon), // Replace with your icon
+                painter = painterResource(id = R.drawable.reviewicon),
                 contentDescription = "Upload Review",
                 modifier = Modifier.size(50.dp)
             )
@@ -86,14 +137,14 @@ fun UploadEarnSection() {
         }
 
         Image(
-            painter = painterResource(id = R.drawable.arrowicon), // Replace with your arrow icon
+            painter = painterResource(id = R.drawable.arrowicon),
             contentDescription = "Arrow",
             modifier = Modifier.size(30.dp)
         )
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = R.drawable.earnmoneyicon), // Replace with your icon
+                painter = painterResource(id = R.drawable.earnmoneyicon),
                 contentDescription = "Earn Money",
                 modifier = Modifier.size(50.dp)
             )
@@ -104,7 +155,7 @@ fun UploadEarnSection() {
 }
 
 @Composable
-fun WelcomeSection(navController: NavController){
+fun WelcomeSection(navController: NavController, onProfileClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,7 +173,7 @@ fun WelcomeSection(navController: NavController){
                 IconButton(onClick = { navController.navigate("notificationScreen") }) {
                     Icon(Icons.Filled.Notifications, contentDescription = "Notifications", tint = Color.White)
                 }
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = onProfileClick) {
                     Icon(Icons.Filled.Person, contentDescription = "Profile", tint = Color.White)
                 }
             }
@@ -155,7 +206,6 @@ fun WelcomeSection(navController: NavController){
                     )
                 }
             }
-            // Removed the Row with the buttons
         }
         Image(
             painter = painterResource(id = R.drawable.wave),
@@ -171,7 +221,7 @@ fun CategorySection(categories: List<Category>) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "Category", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.Black))
         Spacer(modifier = Modifier.height(8.dp))
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(54.dp)) { // Increased spacing
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(54.dp)) {
             items(categories) { category ->
                 CategoryItem(category = category)
             }
