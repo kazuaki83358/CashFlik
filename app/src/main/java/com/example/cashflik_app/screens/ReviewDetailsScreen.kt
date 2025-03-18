@@ -1,6 +1,7 @@
 package com.example.cashflik_app.screens
 
 import android.util.Log
+import androidx.activity.compose.BackHandler // Import BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -42,7 +43,11 @@ fun ReviewDetailsScreen(
                     titleContentColor = Color.White
                 ),
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        navController.navigate("home") { // Navigate to home
+                            popUpTo(0) // Clear the back stack
+                        }
+                    }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
@@ -56,8 +61,8 @@ fun ReviewDetailsScreen(
         bottomBar = {
             BottomAppBar(
                 containerColor = CustomGreenColor,
-                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp), // Reduced vertical padding
-                modifier = Modifier.height(50.dp) // Explicitly set height
+                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+                modifier = Modifier.height(50.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -86,6 +91,13 @@ fun ReviewDetailsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             ReviewCardDetails(title, description, image, date, points, stars)
+        }
+    }
+
+    // Add BackHandler to handle system back button press
+    BackHandler {
+        navController.navigate("home") {
+            popUpTo(0)
         }
     }
 }
