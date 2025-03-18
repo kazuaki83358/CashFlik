@@ -37,7 +37,7 @@ fun DrawerScreen(navController: NavController, modifier: Modifier = Modifier) {
                     painter = painterResource(id = R.drawable.profileicon),
                     contentDescription = "Profile",
                     modifier = Modifier
-                        .size(40.dp) // Removed .clip(CircleShape)
+                        .size(40.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
@@ -56,9 +56,9 @@ fun DrawerScreen(navController: NavController, modifier: Modifier = Modifier) {
         // Menu Items
         DrawerItem(navController = navController, icon = R.drawable.ic_profile, text = "Profile", route = "profileScreen")
         DrawerItem(icon = R.drawable.ic_share, text = "Share", onClick = { /* Handle Share */ })
-        DrawerItem(icon = R.drawable.ic_about_us, text = "About Us", onClick = { /* Navigate to About Us */ })
-        DrawerItem(icon = R.drawable.ic_terms, text = "Terms and Conditions", onClick = { /* Navigate to Terms */ })
-        DrawerItem(icon = R.drawable.ic_privacy, text = "Privacy Policy", onClick = { /* Navigate to Privacy */ })
+        DrawerItem(navController = navController, icon = R.drawable.ic_about_us, text = "About Us", route = "aboutUsScreen") // Navigate to About Us
+        DrawerItem(navController = navController, icon = R.drawable.ic_terms, text = "Terms and Conditions", route = "termsConditionsScreen") // Navigate to Terms
+        DrawerItem(navController = navController, icon = R.drawable.ic_privacy, text = "Privacy Policy", route = "privacyPolicyScreen") // Navigate to Privacy
         DrawerItem(icon = R.drawable.ic_logout, text = "Logout", onClick = { /* Handle Logout */ })
     }
 }

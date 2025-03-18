@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.cashflik_app.screens.*
-import com.example.profile_screen.ProfileScreen // Import ProfileScreen
+import com.example.profile_screen.ProfileScreen
 import com.example.cashflik_app.ui.theme.CashflikAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -42,7 +42,7 @@ fun AppNavigation() {
                 onForgotPasswordClick = { navController.navigate("forgotPassword") },
                 onLoginSuccess = {
                     navController.navigate("home") {
-                        popUpTo("login") { inclusive = true } // Clear back stack
+                        popUpTo("login") { inclusive = true }
                         launchSingleTop = true
                     }
                 }
@@ -152,15 +152,20 @@ fun AppNavigation() {
             )
         }
 
-        // Add Profile Screen Route
         composable("profileScreen") {
-            ProfileScreen(navController = navController) // Pass navController here
+            ProfileScreen(navController = navController)
         }
 
-        // Add Other Drawer Screen Routes
-        composable("aboutUsScreen") { AboutUsScreen() }
-        composable("termsConditionsScreen") { TermsConditionsScreen() }
-        composable("privacyPolicyScreen") { PrivacyPolicyScreen() }
+        composable("aboutUsScreen") {
+            AboutUsScreen(navController = navController) // Pass navController
+        }
 
+        composable("termsConditionsScreen") {
+            TermsConditionsScreen(navController = navController) // Pass navController
+        }
+
+        composable("privacyPolicyScreen") {
+            PrivacyPolicyScreen(navController = navController) // Pass navController
+        }
     }
 }
