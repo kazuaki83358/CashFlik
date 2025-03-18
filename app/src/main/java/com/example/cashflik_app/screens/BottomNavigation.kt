@@ -1,6 +1,5 @@
 package com.example.cashflik_app.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,34 +9,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.cashflik_app.R
+import com.example.cashflik_app.ui.theme.CustomBlueColor // Import your CustomBlueColor
 
 @Composable
-fun BottomNavigation(
-    navController: NavController,
-    currentRoute: String?
-) {
+fun BottomNavigation(navController: NavController, currentRoute: String?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Transparent)
+            .height(58.dp)
+            .background(CustomBlueColor) // Use CustomBlueColor as the background
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.navbar),
-            contentDescription = "Bottom Wave",
-            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
-            contentScale = ContentScale.FillWidth
-        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .align(Alignment.BottomCenter),
+                .align(Alignment.Center), // Center the Row vertically
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -45,41 +36,25 @@ fun BottomNavigation(
                 icon = R.drawable.ic_home,
                 text = "Home",
                 isSelected = currentRoute == "home",
-                onClick = {
-                    if (currentRoute != "home") {
-                        navController.navigate("home")
-                    }
-                }
+                onClick = { navigateToScreen(navController, "home", currentRoute) }
             )
             BottomNavItem(
                 icon = R.drawable.add,
                 text = "Add Review",
                 isSelected = currentRoute == "addReview",
-                onClick = {
-                    if (currentRoute != "addReview") {
-                        navController.navigate("addReview")
-                    }
-                }
+                onClick = { navigateToScreen(navController, "addReview", currentRoute) }
             )
             BottomNavItem(
                 icon = R.drawable.list,
                 text = "Review History",
                 isSelected = currentRoute == "reviewHistory",
-                onClick = {
-                    if (currentRoute != "reviewHistory") {
-                        navController.navigate("reviewHistory")
-                    }
-                }
+                onClick = { navigateToScreen(navController, "reviewHistory", currentRoute) }
             )
             BottomNavItem(
                 icon = R.drawable.wallet,
                 text = "Wallet",
                 isSelected = currentRoute == "wallet",
-                onClick = {
-                    if (currentRoute != "wallet") {
-                        navController.navigate("wallet")
-                    }
-                }
+                onClick = { navigateToScreen(navController, "wallet", currentRoute) }
             )
         }
     }
@@ -101,5 +76,14 @@ fun BottomNavItem(icon: Int, text: String, isSelected: Boolean, onClick: () -> U
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(text, color = iconColor, fontSize = 12.sp)
+    }
+}
+
+fun navigateToScreen(navController: NavController, route: String, currentRoute: String?) {
+    if (currentRoute != route) {
+        navController.navigate(route) {
+            popUpTo(route) { inclusive = false }
+            launchSingleTop = true
+        }
     }
 }

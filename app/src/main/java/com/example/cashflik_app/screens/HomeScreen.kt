@@ -37,7 +37,7 @@ fun HomeScreen(navController: NavController) {
         Category("Laptop", R.drawable.laptop),
         Category("Mobile", R.drawable.phone),
         Category("Earbuds", R.drawable.earbuds),
-        Category("Smart Watc", R.drawable.watch)
+        Category("Smart Watch", R.drawable.watch)
     )
 
     val reviews = listOf(
@@ -58,7 +58,7 @@ fun HomeScreen(navController: NavController) {
                 .verticalScroll(rememberScrollState())
                 .padding(paddingValues)
         ) {
-            WelcomeSection()
+            WelcomeSection(navController = navController)
             UploadEarnSection()
             CategorySection(categories = categories)
             MyReviewSection(reviews = reviews)
@@ -104,7 +104,7 @@ fun UploadEarnSection() {
 }
 
 @Composable
-fun WelcomeSection() {
+fun WelcomeSection(navController: NavController){
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -119,7 +119,7 @@ fun WelcomeSection() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { navController.navigate("notificationScreen") }) {
                     Icon(Icons.Filled.Notifications, contentDescription = "Notifications", tint = Color.White)
                 }
                 IconButton(onClick = { /*TODO*/ }) {
@@ -167,74 +167,74 @@ fun WelcomeSection() {
 }
 
 @Composable
-    fun CategorySection(categories: List<Category>) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Category", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.Black))
-            Spacer(modifier = Modifier.height(8.dp))
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(54.dp)) { // Increased spacing
-                items(categories) { category ->
-                    CategoryItem(category = category)
-                }
+fun CategorySection(categories: List<Category>) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Category", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.Black))
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(54.dp)) { // Increased spacing
+            items(categories) { category ->
+                CategoryItem(category = category)
             }
         }
     }
+}
 
-    @Composable
-    fun CategoryItem(category: Category) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(
-                painter = painterResource(id = category.icon),
-                contentDescription = category.name,
-                modifier = Modifier.size(28.dp) // Decreased size
+@Composable
+fun CategoryItem(category: Category) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Image(
+            painter = painterResource(id = category.icon),
+            contentDescription = category.name,
+            modifier = Modifier.size(28.dp) // Decreased size
+        )
+        Spacer(modifier = Modifier.height(4.dp)) // Added space
+        Text(text = category.name, fontSize = 12.sp, color = Color.Black)
+    }
+}
+
+@Composable
+fun MyReviewSection(reviews: List<Review>) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "My Review",
+                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp),
+                color = Color.Black // Added color
             )
-            Spacer(modifier = Modifier.height(4.dp)) // Added space
-            Text(text = category.name, fontSize = 12.sp, color = Color.Black)
+            Text(text = "View All", color = Color.Blue, modifier = Modifier.clickable { /*TODO*/ })
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(reviews) { review ->
+                ReviewItem(review = review)
+            }
         }
     }
+}
 
-    @Composable
-    fun MyReviewSection(reviews: List<Review>) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "My Review",
-                    style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                    color = Color.Black // Added color
-                )
-                Text(text = "View All", color = Color.Blue, modifier = Modifier.clickable { /*TODO*/ })
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(reviews) { review ->
-                    ReviewItem(review = review)
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun ReviewItem(review: Review) {
-        Card(
-            modifier = Modifier.width(200.dp),
-            shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ) {
-            Column {
-                Image(
-                    painter = painterResource(id = review.image),
-                    contentDescription = review.title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp),
-                    contentScale = ContentScale.Crop
-                )
-                Column(modifier = Modifier.padding(8.dp)) {
-                    Text(text = review.date, fontSize = 10.sp)
-                    Text(text = review.title, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    Text(text = review.description, fontSize = 12.sp)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = review.points, fontSize = 14.sp, color = Color.Green)
-                }
+@Composable
+fun ReviewItem(review: Review) {
+    Card(
+        modifier = Modifier.width(200.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column {
+            Image(
+                painter = painterResource(id = review.image),
+                contentDescription = review.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(modifier = Modifier.padding(8.dp)) {
+                Text(text = review.date, fontSize = 10.sp)
+                Text(text = review.title, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Text(text = review.description, fontSize = 12.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = review.points, fontSize = 14.sp, color = Color.Green)
             }
         }
     }
+}

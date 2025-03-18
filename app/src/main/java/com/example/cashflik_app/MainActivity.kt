@@ -9,7 +9,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.cashflik_app.screens.*
+import com.example.cashflik_app.screens.AddReviewScreen
+import com.example.cashflik_app.screens.CreateNewPasswordScreen
+import com.example.cashflik_app.screens.FirstSplashScreen
+import com.example.cashflik_app.screens.ForgotPasswordScreen
+import com.example.cashflik_app.screens.ForgotOtpScreen
+import com.example.cashflik_app.screens.HomeScreen
+import com.example.cashflik_app.screens.LoginPage
+import com.example.cashflik_app.screens.NotificationScreen
+import com.example.cashflik_app.screens.OtpScreen
+import com.example.cashflik_app.screens.PasswordUpdatedScreen
+import com.example.cashflik_app.screens.ReviewDetailsScreen
+import com.example.cashflik_app.screens.ReviewHistoryScreen
+import com.example.cashflik_app.screens.SecondLoadingScreen
+import com.example.cashflik_app.screens.SignupPage
+import com.example.cashflik_app.screens.WalletScreen
 import com.example.cashflik_app.ui.theme.CashflikAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -26,8 +40,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "splash") { // Set splash as startDestination
-
+    NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
             FirstSplashScreen(navController = navController)
         }
@@ -102,6 +115,10 @@ fun AppNavigation() {
 
         composable("wallet") {
             WalletScreen(navController = navController)
+        }
+
+        composable("notificationScreen") { // Added notification screen
+            NotificationScreen(navController = navController)
         }
 
         composable(
