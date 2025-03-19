@@ -3,11 +3,17 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.dagger.hilt.plugin)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
     namespace = "com.example.cashflik_app"
     compileSdk = 35
+
+    kapt {
+        correctErrorTypes = true
+    }
 
     defaultConfig {
         applicationId = "com.example.cashflik_app"
@@ -68,4 +74,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0") // Or the latest version
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0") // Or the latest version for lifecycle-aware coroutines
+    implementation(libs.dagger.hilt)
+    kapt(libs.dagger.hilt.compiler)
 }
