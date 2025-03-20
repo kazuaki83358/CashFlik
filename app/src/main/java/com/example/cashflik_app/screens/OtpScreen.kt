@@ -37,7 +37,8 @@ fun OtpScreen(
     signupViewModel: SignupViewModel,
     phoneNumber: String,
     password: String,
-    verificationId: String // Receive verificationId
+    verificationId: String,
+    name: String // Receive name
 ) {
     var otpValues by remember { mutableStateOf(List(6) { "" }) }
     val focusRequesters = List(6) { FocusRequester() }
@@ -167,7 +168,8 @@ fun OtpScreen(
                             otp = enteredOtp,
                             phoneNumber = phoneNumber,
                             password = password,
-                            verificationId = verificationId, // Pass verificationId
+                            verificationId = verificationId,
+                            name = name, // Pass name
                             onSuccess = {
                                 isLoading = false
                                 Toast.makeText(context, "OTP Verified! Account Created.", Toast.LENGTH_LONG).show()

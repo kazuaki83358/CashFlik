@@ -32,8 +32,7 @@ class SignupViewModel : ViewModel() {
         activity: Activity,
         onCodeSent: (String) -> Unit,
         onError: (String) -> Unit
-    )
-    {
+    ) {
         _isLoading.value = true
 
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -69,19 +68,20 @@ class SignupViewModel : ViewModel() {
         otp: String,
         phoneNumber: String,
         password: String,
-        verificationId: String, // Receive verificationId
+        verificationId: String,
+        name: String, // Receive name
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         val id = verificationId
-        if (id.isEmpty()) { //check if empty, not null.
+        if (id.isEmpty()) {
             onError("Invalid verification ID")
             return
         }
 
         _isLoading.value = true
         val credential = PhoneAuthProvider.getCredential(id, otp)
-        signInWithCredential(credential, phoneNumber, password, onSuccess, onError)
+        signInWithCredential(credential, phoneNumber, password, name, onSuccess, onError) // Pass name
     }
 
     // Step 3: Sign in with OTP and Store User Data
@@ -89,6 +89,7 @@ class SignupViewModel : ViewModel() {
         credential: PhoneAuthCredential,
         phoneNumber: String,
         password: String,
+        name: String, // Receive name
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -97,7 +98,7 @@ class SignupViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     val user = task.result?.user
                     user?.let {
-                        registerUserInAuth(phoneNumber, password, it.uid, onSuccess, onError)
+                        registerUserInAuth(phoneNumber, password, name, it.uid, onSuccess, onError) // Pass name
                     }
                 } else {
                     _isLoading.value = false
@@ -110,6 +111,7 @@ class SignupViewModel : ViewModel() {
     private fun registerUserInAuth(
         phoneNumber: String,
         password: String,
+        name: String, // Receive name
         uid: String,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
@@ -125,7 +127,7 @@ class SignupViewModel : ViewModel() {
                         auth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener { registerTask ->
                                 if (registerTask.isSuccessful) {
-                                    saveUserToFirestore(uid, phoneNumber, onSuccess, onError)
+                                    saveUserToFirestore(uid, phoneNumber, name, onSuccess, onError) // Pass name
                                 } else {
                                     _isLoading.value = false
                                     onError(registerTask.exception?.localizedMessage ?: "Auth registration failed")
@@ -133,7 +135,7 @@ class SignupViewModel : ViewModel() {
                             }
                     } else {
                         // User already exists, just store data
-                        saveUserToFirestore(uid, phoneNumber, onSuccess, onError)
+                        saveUserToFirestore(uid, phoneNumber, name, onSuccess, onError) // Pass name
                     }
                 } else {
                     _isLoading.value = false
@@ -146,13 +148,14 @@ class SignupViewModel : ViewModel() {
     private fun saveUserToFirestore(
         uid: String,
         phone: String,
+        name: String, // Receive name
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         val user = User(
             id = uid,
             phone = phone,
-            name = "",
+            name = name, // Store name
             email = "",
             address = "",
             city = "",
@@ -177,5 +180,3 @@ class SignupViewModel : ViewModel() {
         }
     }
 }
-
-

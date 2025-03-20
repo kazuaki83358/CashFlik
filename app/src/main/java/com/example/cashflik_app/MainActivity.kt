@@ -57,27 +57,28 @@ fun AppNavigation() {
         }
 
         composable(
-            route = "otp/{phoneNumber}/{password}/{verificationId}",
+            route = "otp/{phoneNumber}/{password}/{verificationId}/{name}", // Add name
             arguments = listOf(
                 navArgument("phoneNumber") { type = NavType.StringType },
                 navArgument("password") { type = NavType.StringType },
-                navArgument("verificationId") { type = NavType.StringType }
+                navArgument("verificationId") { type = NavType.StringType },
+                navArgument("name") { type = NavType.StringType } // Add name
             )
         ) { backStackEntry ->
             val phoneNumber = backStackEntry.arguments?.getString("phoneNumber") ?: ""
             val password = backStackEntry.arguments?.getString("password") ?: ""
-            val verificationId = backStackEntry.arguments?.getString("verificationId") ?: "" // Retrieve verificationId
+            val verificationId = backStackEntry.arguments?.getString("verificationId") ?: ""
+            val name = backStackEntry.arguments?.getString("name") ?: "" // Retrieve name
 
             OtpScreen(
                 navController = navController,
                 signupViewModel = signupViewModel,
                 phoneNumber = phoneNumber,
                 password = password,
-                verificationId = verificationId // Pass verificationId
+                verificationId = verificationId,
+                name = name // Pass name
             )
         }
-
-
 
         composable("forgotPassword") {
             ForgotPasswordScreen(navController = navController) { mobileNumber ->

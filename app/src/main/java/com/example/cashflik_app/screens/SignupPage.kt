@@ -128,8 +128,8 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
                             signupViewModel.sendOtp(
                                 phoneNumber = mobileNumber,
                                 activity = activity,
-                                onCodeSent = { verificationId -> // Receive verificationId
-                                    navController.navigate("otp/$mobileNumber/$password/$verificationId") // Pass verificationId
+                                onCodeSent = { verificationId ->
+                                    navController.navigate("otp/$mobileNumber/$password/$verificationId/$name") // Include name here
                                 },
                                 onError = { error ->
                                     Toast.makeText(context, error, Toast.LENGTH_LONG).show()
@@ -139,6 +139,7 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
                             Toast.makeText(context, "Error: Context is not an Activity", Toast.LENGTH_SHORT).show()
                         }
                     },
+
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
