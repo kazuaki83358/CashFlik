@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,6 +13,7 @@ import androidx.navigation.navArgument
 import com.example.cashflik_app.screens.*
 import com.example.profile_screen.ProfileScreen
 import com.example.cashflik_app.ui.theme.CashflikAppTheme
+import com.example.cashflik_app.viewmodel.SignupViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +29,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val signupViewModel: SignupViewModel = viewModel()
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
             FirstSplashScreen(navController = navController)
@@ -53,14 +56,28 @@ fun AppNavigation() {
             SignupPage(navController = navController)
         }
 
-        composable("otp") {
-            OtpScreen(navController = navController) {
-                navController.navigate("login") {
-                    popUpTo("otp") { inclusive = true }
-                    launchSingleTop = true
-                }
-            }
+        composable(
+            route = "otp/{phoneNumber}/{password}/{verificationId}",
+            arguments = listOf(
+                navArgument("phoneNumber") { type = NavType.StringType },
+                navArgument("password") { type = NavType.StringType },
+                navArgument("verificationId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val phoneNumber = backStackEntry.arguments?.getString("phoneNumber") ?: ""
+            val password = backStackEntry.arguments?.getString("password") ?: ""
+            val verificationId = backStackEntry.arguments?.getString("verificationId") ?: "" // Retrieve verificationId
+
+            OtpScreen(
+                navController = navController,
+                signupViewModel = signupViewModel,
+                phoneNumber = phoneNumber,
+                password = password,
+                verificationId = verificationId // Pass verificationId
+            )
         }
+
+
 
         composable("forgotPassword") {
             ForgotPasswordScreen(navController = navController) { mobileNumber ->

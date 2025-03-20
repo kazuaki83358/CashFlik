@@ -1,11 +1,14 @@
 package com.example.cashflik_app.screens
 
+import android.app.Activity
+import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,22 +21,26 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.cashflik_app.R
 import com.example.cashflik_app.ui.theme.CustomBlueColor
-import androidx.compose.ui.text.input.VisualTransformation
+import com.example.cashflik_app.viewmodel.SignupViewModel
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignupPage(navController: NavController) {
+fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = viewModel()) {
     val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var mobileNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    val isLoading by signupViewModel.isLoading.collectAsState()
 
     Column(
         modifier = Modifier
@@ -66,12 +73,12 @@ fun SignupPage(navController: NavController) {
                 // Title
                 Text(
                     text = "CREATE NEW ACCOUNT",
-                    style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
                     text = "Welcome back, you've been missed!",
-                    style = TextStyle(fontSize = 14.sp, color = Color.Gray),
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray),
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -80,44 +87,65 @@ fun SignupPage(navController: NavController) {
                     value = name,
                     label = "Name",
                     icon = R.drawable.ic_person,
-                    onValueChange = { name = it }
+                    onValueChange = { name = it.trim() }
                 )
                 InputField(
                     value = mobileNumber,
                     label = "Mobile Number",
                     icon = R.drawable.ic_phone,
-                    onValueChange = { mobileNumber = it }
+                    onValueChange = { mobileNumber = it.trim() }
                 )
                 InputField(
                     value = password,
                     label = "Password",
                     icon = R.drawable.ic_lock,
                     isPassword = true,
-                    onValueChange = { password = it }
+                    onValueChange = { password = it.trim() }
                 )
                 InputField(
                     value = confirmPassword,
                     label = "Confirm Password",
                     icon = R.drawable.ic_lock,
                     isPassword = true,
-                    onValueChange = { confirmPassword = it }
+                    onValueChange = { confirmPassword = it.trim() }
                 )
 
                 // Signup Button
                 Button(
                     onClick = {
-                        if (password == confirmPassword) {
-                            navController.navigate("otp")
-                        } else {
+                        if (!isValidMobileNumber(mobileNumber)) {
+                            Toast.makeText(context, "Enter a valid mobile number with +91", Toast.LENGTH_LONG).show()
+                            return@Button
+                        }
+
+                        if (password != confirmPassword) {
                             Toast.makeText(context, "Passwords do not match", Toast.LENGTH_LONG).show()
+                            return@Button
+                        }
+
+                        val activity = context as? Activity
+                        if (activity != null) {
+                            signupViewModel.sendOtp(
+                                phoneNumber = mobileNumber,
+                                activity = activity,
+                                onCodeSent = { verificationId -> // Receive verificationId
+                                    navController.navigate("otp/$mobileNumber/$password/$verificationId") // Pass verificationId
+                                },
+                                onError = { error ->
+                                    Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                                }
+                            )
+                        } else {
+                            Toast.makeText(context, "Error: Context is not an Activity", Toast.LENGTH_SHORT).show()
                         }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    enabled = !isLoading
                 ) {
-                    Text(text = "Signup", color = Color.White)
+                    Text(text = if (isLoading) "Loading..." else "Signup", color = Color.White)
                 }
 
                 // Login Link
@@ -130,7 +158,10 @@ fun SignupPage(navController: NavController) {
                     Text(text = "Already have an account? ")
                     Text(
                         text = "Log in",
-                        style = TextStyle(color = Color.Blue, textDecoration = TextDecoration.Underline),
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = Color.Blue,
+                            textDecoration = TextDecoration.Underline
+                        ),
                         modifier = Modifier.clickable(onClick = { navController.navigate("login") }, role = Role.Button)
                     )
                 }
@@ -155,8 +186,11 @@ fun InputField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
-        textStyle = TextStyle(color = Color.Black),
+        textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.Black),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = if (isPassword) androidx.compose.ui.text.input.KeyboardType.Password else androidx.compose.ui.text.input.KeyboardType.Text
+        ),
         leadingIcon = {
             Icon(
                 painter = painterResource(id = icon),
@@ -167,9 +201,20 @@ fun InputField(
         colors = OutlinedTextFieldDefaults.colors(
             focusedTextColor = Color.Black,
             unfocusedTextColor = Color.Black,
-            cursorColor = Color.Black,
+            cursorColor = MaterialTheme.colorScheme.primary,
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = Color.Gray
         )
     )
+}
+
+// Function to validate mobile number format
+fun isValidMobileNumber(mobileNumber: String): Boolean {
+    val phoneNumberUtil = PhoneNumberUtil.getInstance()
+    return try {
+        val parsedNumber = phoneNumberUtil.parse(mobileNumber, "IN") // "IN" for India
+        phoneNumberUtil.isValidNumber(parsedNumber)
+    } catch (e: Exception) {
+        false
+    }
 }

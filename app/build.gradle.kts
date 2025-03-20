@@ -76,4 +76,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0") // Or the latest version for lifecycle-aware coroutines
     implementation(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.13.17")
 }
