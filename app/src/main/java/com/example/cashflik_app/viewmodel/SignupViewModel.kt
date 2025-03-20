@@ -26,7 +26,7 @@ class SignupViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    // Step 1: Send OTP
+    // Step 1: Send OTP for Phone Verification
     fun sendOtp(
         phoneNumber: String,
         activity: Activity,
@@ -69,7 +69,7 @@ class SignupViewModel : ViewModel() {
         phoneNumber: String,
         password: String,
         verificationId: String,
-        name: String, // Receive name
+        name: String,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -81,15 +81,15 @@ class SignupViewModel : ViewModel() {
 
         _isLoading.value = true
         val credential = PhoneAuthProvider.getCredential(id, otp)
-        signInWithCredential(credential, phoneNumber, password, name, onSuccess, onError) // Pass name
+        signInWithCredential(credential, phoneNumber, password, name, onSuccess, onError)
     }
 
-    // Step 3: Sign in with OTP and Store User Data
+    // Step 3: Sign in with Phone Credential
     private fun signInWithCredential(
         credential: PhoneAuthCredential,
         phoneNumber: String,
         password: String,
-        name: String, // Receive name
+        name: String,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -98,7 +98,7 @@ class SignupViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     val user = task.result?.user
                     user?.let {
-                        registerUserInAuth(phoneNumber, password, name, it.uid, onSuccess, onError) // Pass name
+                        registerUserInAuth(phoneNumber, password, name, it.uid, onSuccess, onError)
                     }
                 } else {
                     _isLoading.value = false
@@ -107,55 +107,56 @@ class SignupViewModel : ViewModel() {
             }
     }
 
-    // Step 4: Register in Firebase Auth (Email/Password)
+    // Step 4: Register Email/Password User and Store Data (using Email UID)
     private fun registerUserInAuth(
         phoneNumber: String,
         password: String,
-        name: String, // Receive name
-        uid: String,
+        name: String,
+        phoneAuthUid: String, // Phone auth UID
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         val email = "$phoneNumber@cashflik.com"
 
         auth.fetchSignInMethodsForEmail(email)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val methods = task.result?.signInMethods
+            .addOnCompleteListener { authTask ->
+                if (authTask.isSuccessful) {
+                    val methods = authTask.result?.signInMethods
                     if (methods.isNullOrEmpty()) {
-                        // User does not exist, create account
+                        // User does not exist, create email/password account
                         auth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener { registerTask ->
                                 if (registerTask.isSuccessful) {
-                                    saveUserToFirestore(uid, phoneNumber, name, onSuccess, onError) // Pass name
+                                    // Use email/password user UID
+                                    saveUserToFirestore(registerTask.result?.user?.uid ?: phoneAuthUid, phoneNumber, name, onSuccess, onError)
                                 } else {
                                     _isLoading.value = false
                                     onError(registerTask.exception?.localizedMessage ?: "Auth registration failed")
                                 }
                             }
                     } else {
-                        // User already exists, just store data
-                        saveUserToFirestore(uid, phoneNumber, name, onSuccess, onError) // Pass name
+                        // User already exists, just store data (using email UID)
+                        saveUserToFirestore(auth.currentUser?.uid ?: phoneAuthUid, phoneNumber, name, onSuccess, onError)
                     }
                 } else {
                     _isLoading.value = false
-                    onError(task.exception?.localizedMessage ?: "Error checking existing account")
+                    onError(authTask.exception?.localizedMessage ?: "Error checking existing account")
                 }
             }
     }
 
-    // Step 5: Store User Data in Firestore
+    // Step 5: Store User Data in Firestore (using Email UID)
     private fun saveUserToFirestore(
         uid: String,
         phone: String,
-        name: String, // Receive name
+        name: String,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         val user = User(
             id = uid,
             phone = phone,
-            name = name, // Store name
+            name = name,
             email = "",
             address = "",
             city = "",
@@ -168,7 +169,7 @@ class SignupViewModel : ViewModel() {
             db.collection("users").document(uid)
                 .set(user)
                 .addOnSuccessListener {
-                    Log.d("SignupViewModel", "User stored successfully")
+                    Log.d("SignupViewModel", "User stored successfully (using email UID)")
                     _isLoading.value = false
                     onSuccess()
                 }
