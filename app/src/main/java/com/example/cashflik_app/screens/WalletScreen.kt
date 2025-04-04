@@ -122,7 +122,7 @@ fun MyWalletSection() {
         ) {
             Column {
                 Text(text = "My Wallet", fontWeight = FontWeight.SemiBold, color = Color.Black, fontSize = 18.sp)
-                Text(text = "120", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = CustomGreenColor)
+                Text(text = "1500", fontWeight = FontWeight.Bold, fontSize = 32.sp, color = CustomGreenColor)
             }
             Text(text = "Withdrawal", color = Color.Blue, modifier = Modifier.clickable { /* TODO */ })
         }
@@ -176,11 +176,11 @@ fun TransactionItem(transaction: Transaction) {
 fun getDummyTransactions(): List<Transaction> {
     return listOf(
         Transaction("Paid", "Paid To Manish", "02:34 PM", "25 February 2022", "-₹300"),
-        Transaction("Received", "Received from Worryease", "02:34 PM", "25 February 2022", "+₹200"),
+        Transaction("Received", "Received from Worryease", "02:34 PM", "25 February 2022", "+₹500"),
         Transaction("Paid", "Paid To Manish", "02:34 PM", "25 February 2022", "-₹300"),
-        Transaction("Received", "Received from Worryease", "02:34 PM", "25 February 2022", "+₹200"),
+        Transaction("Received", "Received from Worryease", "02:34 PM", "25 February 2022", "+₹300"),
         Transaction("Paid", "Paid To Manish", "02:34 PM", "25 February 2022", "-₹300"),
-        Transaction("Received", "Received from Worryease", "02:34 PM", "25 February 2022", "+₹200")
+        Transaction("Received", "Received from Worryease", "02:34 PM", "25 February 2022", "+₹300")
     )
 }
 

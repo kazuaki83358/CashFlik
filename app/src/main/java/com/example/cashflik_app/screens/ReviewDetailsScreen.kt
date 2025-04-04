@@ -1,7 +1,7 @@
 package com.example.cashflik_app.screens
 
 import android.util.Log
-import androidx.activity.compose.BackHandler // Import BackHandler
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -32,7 +32,7 @@ fun ReviewDetailsScreen(
     image: Int,
     date: String,
     points: String,
-    stars: Float
+    stars: Float // Receiving rating as 'stars'
 ) {
     Scaffold(
         topBar = {
@@ -44,9 +44,7 @@ fun ReviewDetailsScreen(
                 ),
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate("home") { // Navigate to home
-                            popUpTo(0) // Clear the back stack
-                        }
+                        navController.popBackStack()
                     }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
@@ -90,20 +88,17 @@ fun ReviewDetailsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            ReviewCardDetails(title, description, image, date, points, stars)
+            ReviewCardDetails(title, description, image, date, points, stars) // Passing 'stars'
         }
     }
 
-    // Add BackHandler to handle system back button press
     BackHandler {
-        navController.navigate("home") {
-            popUpTo(0)
-        }
+        navController.popBackStack()
     }
 }
 
 @Composable
-fun ReviewCardDetails(title: String, description: String, image: Int, date: String, points: String, stars: Float) {
+fun ReviewCardDetails(title: String, description: String, image: Int, date: String, points: String, stars: Float) { // Receiving 'stars'
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -145,7 +140,7 @@ fun ReviewCardDetails(title: String, description: String, image: Int, date: Stri
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Spacer(modifier = Modifier.width(8.dp))
-                RatingBar(rating = stars)
+                RatingBar(rating = stars) // Using 'stars' here
             }
 
             Text(description, fontSize = 14.sp)
@@ -154,7 +149,7 @@ fun ReviewCardDetails(title: String, description: String, image: Int, date: Stri
 }
 
 @Composable
-fun RatingBar(rating: Float, maxRating: Int = 5) {
+fun RatingBar(rating: Float, maxRating: Int = 5) { // Parameter is 'rating'
     Row {
         for (i in 1..maxRating) {
             Icon(

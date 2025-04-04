@@ -1,5 +1,6 @@
 package com.example.cashflik_app.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,8 +33,14 @@ import com.example.cashflik_app.ui.theme.CustomBlueColor
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 data class Category(val name: String, val icon: Int)
 
@@ -43,7 +50,11 @@ fun HomeScreen(navController: NavController) {
         Category("Laptop", R.drawable.laptop),
         Category("Mobile", R.drawable.phone),
         Category("Earbuds", R.drawable.earbuds),
-        Category("Smart Watch", R.drawable.watch)
+        Category("Smart Watch", R.drawable.watch),
+        Category("Television", R.drawable.television),
+        Category("Camera", R.drawable.camera),
+        Category("Accessories", R.drawable.accessories),
+        Category("Appliances", R.drawable.appliances)
     )
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -51,36 +62,44 @@ fun HomeScreen(navController: NavController) {
 
     val reviews = listOf(
         Review(
-            "OnePlus 11R 5G",
-            "Camera: Sensor: 50MP Main Camera with Sony IMX890",
-            R.drawable.ic_launcher_foreground,
-            "26 Jun 2024 01:30 PM",
-            "120",
-            4.0f
+            "Dell XPS 15",
+            "Processor: Intel Core i7, RAM: 16GB, Storage: 512GB SSD",
+            R.drawable.laptop_placeholder,
+            "03 Apr 2025 08:00 PM",
+            "50",
+            4.5f
         ),
         Review(
-            "OnePlus 11R 5G",
-            "Camera: Sensor: 50MP Main Camera with Sony IMX890",
-            R.drawable.ic_launcher_foreground,
-            "25 Jun 2024 03:30 PM",
-            "120",
-            4.0f
+            "Sony Alpha 7 III",
+            "Sensor: 24.2MP Full-Frame, Video: 4K, Lens Mount: E-mount",
+            R.drawable.camera_placeholder,
+            "02 Apr 2025 06:30 PM",
+            "50",
+            4.8f
         ),
         Review(
-            "OnePlus 11R 5G",
-            "Camera: Sensor: 50MP Main Camera with Sony IMX890",
-            R.drawable.ic_launcher_foreground,
-            "25 Jun 2024 03:30 PM",
-            "120",
-            4.0f
+            "Samsung Galaxy Buds Pro",
+            "Audio: Active Noise Cancelling, Battery: Up to 8 hours",
+            R.drawable.earbuds_placeholder,
+            "01 Apr 2025 10:00 AM",
+            "50",
+            4.2f
         ),
         Review(
-            "OnePlus 11R 5G",
-            "Camera: Sensor: 50MP Main Camera with Sony IMX890",
-            R.drawable.ic_launcher_foreground,
-            "25 Jun 2024 03:30 PM",
-            "120",
-            4.0f
+            "Apple Watch Series 9",
+            "Features: GPS, Blood Oxygen sensor, Always-On",
+            R.drawable.watch_placeholder,
+            "31 Mar 2025 04:00 PM",
+            "50",
+            4.7f
+        ),
+        Review(
+            "LG OLED C3",
+            "Display: 55-inch OLED, Resolution: 4K, Smart TV",
+            R.drawable.television_placeholder,
+            "30 Mar 2025 09:15 AM",
+            "50",
+            4.9f
         )
     )
 
@@ -109,7 +128,7 @@ fun HomeScreen(navController: NavController) {
                     CategorySection(categories = categories)
 
                     Column(modifier = Modifier.weight(1f)) {
-                        MyReviewSection(reviews = reviews)
+                        MyReviewSection(reviews = reviews, navController = navController) // Pass navController
                     }
                 }
             }
@@ -133,7 +152,7 @@ fun UploadEarnSection() {
                 modifier = Modifier.size(50.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Earn Money", color = Color.Black)
+            Text("Upload Review", color = Color.Black)
         }
 
         Image(
@@ -181,27 +200,24 @@ fun WelcomeSection(navController: NavController, onProfileClick: () -> Unit) {
                 text = "Welcome Back 👋",
                 style = TextStyle(color = Color.White, fontSize = 18.sp)
             )
-            Text(
-                text = "Thu, 25 Jan 2024",
-                style = TextStyle(color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
-            )
+            CurrentTimeText() // Calling the new composable here
             Spacer(modifier = Modifier.height(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                    painter = painterResource(id = R.drawable.profile_photo),
                     contentDescription = "Profile",
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(35.dp)
                         .clip(CircleShape)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = "Laura Hernandez",
+                        text = "Yash Jadam",
                         style = TextStyle(color = Color.White, fontWeight = FontWeight.Bold)
                     )
                     Text(
-                        text = "1200",
+                        text = "1500",
                         style = TextStyle(color = Color.White.copy(alpha = 0.7f))
                     )
                 }
@@ -214,6 +230,25 @@ fun WelcomeSection(navController: NavController, onProfileClick: () -> Unit) {
             contentScale = ContentScale.FillWidth
         )
     }
+}
+
+@Composable
+fun CurrentTimeText() {
+    val currentTime = remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            val calendar = Calendar.getInstance()
+            val format = SimpleDateFormat("EEE, dd MMM", Locale.getDefault())
+            currentTime.value = format.format(calendar.time)
+            kotlinx.coroutines.delay(1000) // Update every second
+        }
+    }
+
+    Text(
+        text = currentTime.value,
+        style = TextStyle(color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
+    )
 }
 
 @Composable
@@ -243,7 +278,7 @@ fun CategoryItem(category: Category) {
 }
 
 @Composable
-fun MyReviewSection(reviews: List<Review>) {
+fun MyReviewSection(reviews: List<Review>, navController: NavController) {
     Column(modifier = Modifier.padding(16.dp)) {
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -251,7 +286,13 @@ fun MyReviewSection(reviews: List<Review>) {
                 style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp),
                 color = Color.Black // Added color
             )
-            Text(text = "View All", color = Color.Blue, modifier = Modifier.clickable { /*TODO*/ })
+            Text(
+                text = "View All",
+                color = Color.Blue,
+                modifier = Modifier.clickable {
+                    navController.navigate("reviewHistoryScreen") // Navigate to the review history screen
+                }
+            )
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

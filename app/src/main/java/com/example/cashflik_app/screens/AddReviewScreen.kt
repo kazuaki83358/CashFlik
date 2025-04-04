@@ -144,7 +144,7 @@ fun AddReviewScreen(navController: NavController) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Filled.CloudUpload, contentDescription = "Upload Video", modifier = Modifier.size(48.dp))
                         Text(
-                            text = "Video formats (MP4, AVI, MOV)\nMax upload size: 2GB",
+                            text = "Video formats (MP4, AVI, MOV)\nMax upload size: 50MB",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodySmall
                         )

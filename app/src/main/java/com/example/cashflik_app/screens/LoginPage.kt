@@ -169,7 +169,7 @@ fun LoginPage(
                     Image(
                         painter = painterResource(id = R.drawable.ic_google),
                         contentDescription = "Google Login",
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(42.dp)
                     )
                 }
             }

@@ -42,7 +42,7 @@ fun SecondLoadingScreen(navController: NavController) {
 
     // Simulate navigation after a delay (if necessary)
     LaunchedEffect(Unit) {
-        delay(3000)
+        delay(1500)
         navController.navigate("login") // Navigate to the login screen after delay
     }
 
@@ -132,7 +132,7 @@ fun PageIndicator(
     modifier: Modifier = Modifier,
     activeColor: Color = Color.Green,
     inactiveColor: Color = Color.White,
-    activeWidthRatio: Float = 2f, // Width ratio for the active dot
+    activeWidthRatio: Float = 2f,
     dotSize: Dp = 10.dp
 ) {
     Row(
@@ -143,24 +143,23 @@ fun PageIndicator(
         for (i in 0 until pageCount) {
             val isActive = i == currentPage
 
-            // Use animated value for the dot width
             val animatedDotWidth by animateDpAsState(
                 targetValue = if (isActive) dotSize * activeWidthRatio else dotSize,
-                animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing) // Faster animation
+                animationSpec = tween(durationMillis = 120, easing = LinearOutSlowInEasing) // Reduced duration to 100 ms
             )
 
             val dotColor = if (isActive) activeColor else inactiveColor
 
             Canvas(modifier = Modifier.size(width = animatedDotWidth, height = dotSize)) {
-                val cornerRadiusValue = dotSize.toPx() / 2 // Calculate toPx inside DrawScope
+                val cornerRadiusValue = dotSize.toPx() / 2
                 drawRoundRect(
                     color = dotColor,
-                    cornerRadius = CornerRadius(cornerRadiusValue, cornerRadiusValue) // Use the calculated value
+                    cornerRadius = CornerRadius(cornerRadiusValue, cornerRadiusValue)
                 )
             }
 
             if (i < pageCount - 1) {
-                Spacer(modifier = Modifier.width(8.dp)) // Adjust spacing between dots
+                Spacer(modifier = Modifier.width(8.dp))
             }
         }
     }

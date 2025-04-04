@@ -47,8 +47,8 @@ fun BottomNavigation(navController: NavController, currentRoute: String?) {
             BottomNavItem(
                 icon = R.drawable.list,
                 text = "Review History",
-                isSelected = currentRoute == "reviewHistory",
-                onClick = { navigateToScreen(navController, "reviewHistory", currentRoute) }
+                isSelected = currentRoute == "reviewHistoryScreen", // Update route here
+                onClick = { navigateToScreen(navController, "reviewHistoryScreen", currentRoute) } // Update route here
             )
             BottomNavItem(
                 icon = R.drawable.wallet,

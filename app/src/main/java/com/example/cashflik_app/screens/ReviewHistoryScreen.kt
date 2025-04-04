@@ -111,9 +111,86 @@ fun SearchAndFilterRow() {
 @Composable
 fun ReviewGrid(navController: NavHostController) {
     val reviews = listOf(
-        Review("OnePlus 11R 5G", "50MP Main Camera with Sony IMX890", R.drawable.oneplus, "25 Jun 2024", "120", 4.0f), // Added stars
-        Review("MacBook Pro", "M3 Chip with 16GB RAM", R.drawable.macbook, "20 Jan 2024", "250", 3.5f), // Added stars
-        Review("Samsung Galaxy S23", "108MP Camera, Snapdragon 8 Gen 2", R.drawable.samsung, "15 Mar 2024", "180", 4.5f), // Added stars
+        Review(
+            "Dell XPS 15",
+            "Processor: Intel Core i7, RAM: 16GB, Storage: 512GB SSD",
+            R.drawable.laptop_placeholder,
+            "03 Apr 2025",
+            "50",
+            4.5f
+        ),
+        Review(
+            "Sony Alpha 7 III",
+            "Sensor: 24.2MP Full-Frame, Video: 4K, Lens Mount: E-mount",
+            R.drawable.camera_placeholder,
+            "02 Apr 2025",
+            "50",
+            4.8f
+        ),
+        Review(
+            "Samsung Galaxy Buds Pro",
+            "Audio: Active Noise Cancelling, Battery: Up to 8 hours",
+            R.drawable.earbuds_placeholder,
+            "01 Apr 2025",
+            "50",
+            4.2f
+        ),
+        Review(
+            "Apple Watch Series 9",
+            "Features: GPS, Blood Oxygen sensor, Always-On",
+            R.drawable.watch_placeholder,
+            "31 Mar 2025",
+            "50",
+            4.7f
+        ),
+        Review(
+            "LG OLED C3",
+            "Display: 55-inch OLED, Resolution: 4K, Smart TV",
+            R.drawable.television_placeholder,
+            "30 Mar 2025",
+            "50",
+            4.9f
+        ),
+        Review(
+            "Google Pixel 8 Pro",
+            "Camera: 50MP Main, Ultrawide, Telephoto",
+            R.drawable.phone_placeholder, // Replace with your phone image
+            "29 Mar 2025",
+            "50",
+            4.6f
+        ),
+        Review(
+            "Bose QuietComfort 45",
+            "Noise Cancelling Headphones",
+            R.drawable.headphones_placeholder, // Replace with your headphones image
+            "28 Mar 2025",
+            "50",
+            4.4f
+        ),
+        Review(
+            "Lenovo ThinkPad X1 Carbon",
+            "Business Laptop, Intel Core i7, 1TB SSD",
+            R.drawable.laptop_placeholder, // Replace with another laptop image
+            "27 Mar 2025",
+            "50",
+            4.7f
+        ),
+        Review(
+            "Canon EOS R6 Mark II",
+            "Full-Frame Mirrorless Camera",
+            R.drawable.camera_placeholder, // Replace with another camera image
+            "26 Mar 2025",
+            "50",
+            4.9f
+        ),
+        Review(
+            "Sony WH-1000XM5",
+            "Industry Leading Noise Cancelling Headphones",
+            R.drawable.headphones2_placeholder, // Replace with another headphones image
+            "25 Mar 2025",
+            "50",
+            4.8f
+        )
     )
 
     LazyVerticalGrid(

@@ -53,13 +53,15 @@ fun AboutUsScreen(navController: NavController) {
 
             Text(
                 text = """
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    Cash Flik is revolutionizing qualitative research by gathering authentic, emotion-rich video feedback directly from users. Our AI-powered platform processes these into deep consumer insights, helping brands make smarter decisions—fast and affordably.
 
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    Our mission is to democratize deep customer insights for businesses of all sizes—without the delay and cost of traditional research firms. We empower individuals to share their genuine experiences and opinions through short video reviews, earning rewards for their valuable feedback.
 
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    We are currently focused on the Indian market, leveraging its mobile-first culture and linguistic diversity with AI transcription and translation. This allows us to tap into a rich pool of diverse perspectives.
 
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+                    Our platform utilizes cutting-edge AI features, including emotion and sentiment detection, script-reading/fake detection, and fraud analysis, to ensure the authenticity and quality of the feedback we provide to businesses.
+
+                    We believe in the power of real human emotion to drive better product development and marketing strategies. By connecting businesses directly with the authentic voices of their consumers, Cash Flik helps build stronger brands and more customer-centric products.
                 """.trimIndent(),
                 fontSize = 16.sp,
                 modifier = Modifier.fillMaxWidth()

@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.cashflik_app.R
 import com.example.cashflik_app.ui.theme.CustomGreenColor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,13 +53,13 @@ fun NotificationScreen(navController: NavController) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(getDummyNotifications()) { notification ->
+            items(getAppNotifications()) { notification ->
                 NotificationCard(notification = notification)
             }
         }
     }
 
-    BackHandler { // Add BackHandler here
+    BackHandler {
         if (navController.previousBackStackEntry != null) {
             navController.popBackStack()
         } else {
@@ -70,7 +71,7 @@ fun NotificationScreen(navController: NavController) {
 }
 
 @Composable
-fun NotificationCard(notification: Notification) {
+fun NotificationCard(notification: AppNotification) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -83,11 +84,11 @@ fun NotificationCard(notification: Notification) {
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(CustomGreenColor),
+                    .background(notification.iconBackgroundColor),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    "S",
+                    notification.iconText,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
@@ -115,58 +116,197 @@ fun NotificationCard(notification: Notification) {
     }
 }
 
-data class Notification(
+data class AppNotification(
     val dateTime: String,
     val title: String,
-    val description: String
+    val description: String,
+    val iconText: String,
+    val iconBackgroundColor: Color
 )
 
-fun getDummyNotifications(): List<Notification> {
+fun getAppNotifications(): List<AppNotification> {
     return listOf(
-        Notification(
-            "25 Jun 2024 03:30PM",
-            "Successfully Upload Review",
-            "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used."
+        AppNotification(
+            "04 Apr 2025 10:15PM",
+            "Successfully Uploaded Review",
+            "Your review for Sony WH-1000XM5 has been successfully uploaded.",
+            "S",
+            CustomGreenColor
         ),
-        Notification(
-            "25 Jun 2024 03:30PM",
-            "Successfully Upload Review",
-            "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used."
+        AppNotification(
+            "04 Apr 2025 10:10PM",
+            "You Earned 50 Coins!",
+            "Thank you for your review! You have earned 50 coins.",
+            "C",
+            Color.Yellow.darker() // Slightly darker yellow for coins
         ),
-        Notification(
-            "25 Jun 2024 03:30PM",
-            "Successfully Upload Review",
-            "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used."
+        AppNotification(
+            "04 Apr 2025 09:00AM",
+            "Redemption Successful!",
+            "Your redemption request for 500 coins has been processed successfully.",
+            "R",
+            Color.Blue.darker() // Slightly darker blue for redemption
         ),
-        Notification(
-            "25 Jun 2024 03:30PM",
-            "Successfully Upload Review",
-            "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used."
+        AppNotification(
+            "03 Apr 2025 08:45PM",
+            "Successfully Uploaded Review",
+            "Your review for Dell XPS 15 is now live.",
+            "D",
+            CustomGreenColor
         ),
-        Notification(
-            "25 Jun 2024 03:30PM",
-            "Successfully Upload Review",
-            "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used."
+        AppNotification(
+            "03 Apr 2025 08:40PM",
+            "You Earned 50 Coins!",
+            "Your contribution is appreciated! 50 coins added to your wallet.",
+            "C",
+            Color.Yellow.darker()
         ),
-        Notification(
-            "25 Jun 2024 03:30PM",
-            "Successfully Upload Review",
-            "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used."
+        AppNotification(
+            "02 Apr 2025 07:00PM",
+            "Successfully Uploaded Review",
+            "Your review for Sony Alpha 7 III has been published.",
+            "S",
+            CustomGreenColor
         ),
-        Notification(
-            "25 Jun 2024 03:30PM",
-            "Successfully Upload Review",
-            "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used."
+        AppNotification(
+            "02 Apr 2025 06:55PM",
+            "You Earned 50 Coins!",
+            "Keep reviewing! You just earned 50 more coins.",
+            "C",
+            Color.Yellow.darker()
         ),
-        Notification(
-            "25 Jun 2024 03:30PM",
-            "Successfully Upload Review",
-            "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used."
+        AppNotification(
+            "01 Apr 2025 10:30AM",
+            "Successfully Uploaded Review",
+            "Your review for Samsung Galaxy Buds Pro is now available.",
+            "S",
+            CustomGreenColor
         ),
-        Notification(
-            "25 Jun 2024 03:30PM",
-            "Successfully Upload Review",
-            "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used."
+        AppNotification(
+            "01 Apr 2025 10:25AM",
+            "You Earned 50 Coins!",
+            "Another great review! You've received 50 coins.",
+            "C",
+            Color.Yellow.darker()
+        ),
+        AppNotification(
+            "31 Mar 2025 04:15PM",
+            "Successfully Uploaded Review",
+            "Your review for Apple Watch Series 9 has been uploaded.",
+            "A",
+            CustomGreenColor
+        ),
+        AppNotification(
+            "31 Mar 2025 04:10PM",
+            "You Earned 50 Coins!",
+            "Thanks for your feedback! 50 coins have been added to your account.",
+            "C",
+            Color.Yellow.darker()
+        ),
+        AppNotification(
+            "30 Mar 2025 09:30AM",
+            "Successfully Uploaded Review",
+            "Your review for LG OLED C3 is now visible to others.",
+            "L",
+            CustomGreenColor
+        ),
+        AppNotification(
+            "30 Mar 2025 09:25AM",
+            "You Earned 50 Coins!",
+            "Your review was helpful! Here are 50 coins for you.",
+            "C",
+            Color.Yellow.darker()
+        ),
+        AppNotification(
+            "29 Mar 2025 08:10PM",
+            "Successfully Uploaded Review",
+            "Your review for Google Pixel 8 Pro has been successfully uploaded.",
+            "G",
+            CustomGreenColor
+        ),
+        AppNotification(
+            "29 Mar 2025 08:05PM",
+            "You Earned 50 Coins!",
+            "Keep up the great work! You've earned 50 more coins.",
+            "C",
+            Color.Yellow.darker()
+        ),
+        AppNotification(
+            "28 Mar 2025 04:30PM",
+            "Successfully Uploaded Review",
+            "Your review for Bose QuietComfort 45 is now live.",
+            "B",
+            CustomGreenColor
+        ),
+        AppNotification(
+            "28 Mar 2025 04:25PM",
+            "You Earned 50 Coins!",
+            "Thank you for sharing your thoughts! 50 coins added.",
+            "C",
+            Color.Yellow.darker()
+        ),
+        AppNotification(
+            "27 Mar 2025 09:45AM",
+            "Successfully Uploaded Review",
+            "Your review for Lenovo ThinkPad X1 Carbon is now published.",
+            "L",
+            CustomGreenColor
+        ),
+        AppNotification(
+            "27 Mar 2025 09:40AM",
+            "You Earned 50 Coins!",
+            "Your review was valuable! Here's a reward of 50 coins.",
+            "C",
+            Color.Yellow.darker()
+        ),
+        AppNotification(
+            "26 Mar 2025 06:00PM",
+            "Successfully Uploaded Review",
+            "Your review for Canon EOS R6 Mark II has been uploaded.",
+            "C",
+            CustomGreenColor
+        ),
+        AppNotification(
+            "26 Mar 2025 05:55PM",
+            "You Earned 50 Coins!",
+            "Another helpful review! You've received 50 coins.",
+            "C",
+            Color.Yellow.darker()
+        ),
+        AppNotification(
+            "25 Mar 2025 07:30PM",
+            "Successfully Uploaded Review",
+            "Your review for Sony WH-1000XM5 is now available.",
+            "S",
+            CustomGreenColor
+        ),
+        AppNotification(
+            "25 Mar 2025 07:25PM",
+            "You Earned 50 Coins!",
+            "Keep reviewing and earning! 50 coins added to your wallet.",
+            "C",
+            Color.Yellow.darker()
+        ),
+        AppNotification(
+            "24 Mar 2025 11:00AM",
+            "Redemption Successful!",
+            "Your recent redemption of 1000 coins is complete.",
+            "R",
+            Color.Blue.darker()
+        ),
+        AppNotification(
+            "23 Mar 2025 02:00PM",
+            "New Features Available!",
+            "Check out the latest features in the app for an enhanced experience.",
+            "N",
+            Color.LightGray.darker()
         )
-    )
+    ).shuffled() // Shuffle for more realistic display
 }
+
+fun Color.darker(factor: Float = 0.8f): Color = Color(
+    red = (this.red * factor).coerceIn(0f, 1f),
+    green = (this.green * factor).coerceIn(0f, 1f),
+    blue = (this.blue * factor).coerceIn(0f, 1f),
+    alpha = this.alpha
+)

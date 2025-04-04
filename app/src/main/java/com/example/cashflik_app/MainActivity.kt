@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -129,8 +130,8 @@ fun AppNavigation() {
             AddReviewScreen(navController = navController)
         }
 
-        composable("reviewHistory") {
-            ReviewHistoryScreen(navController = navController)
+        composable("reviewHistoryScreen") {
+            ReviewHistoryScreen(navController = navController as NavHostController)
         }
 
         composable("wallet") {
@@ -175,15 +176,15 @@ fun AppNavigation() {
         }
 
         composable("aboutUsScreen") {
-            AboutUsScreen(navController = navController) // Pass navController
+            AboutUsScreen(navController = navController)
         }
 
         composable("termsConditionsScreen") {
-            TermsConditionsScreen(navController = navController) // Pass navController
+            TermsConditionsScreen(navController = navController)
         }
 
         composable("privacyPolicyScreen") {
-            PrivacyPolicyScreen(navController = navController) // Pass navController
+            PrivacyPolicyScreen(navController = navController)
         }
     }
 }
