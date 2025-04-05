@@ -42,7 +42,7 @@ fun SecondLoadingScreen(navController: NavController) {
 
     // Simulate navigation after a delay (if necessary)
     LaunchedEffect(Unit) {
-        delay(1500)
+        delay(1000)
         navController.navigate("login") // Navigate to the login screen after delay
     }
 
@@ -145,7 +145,7 @@ fun PageIndicator(
 
             val animatedDotWidth by animateDpAsState(
                 targetValue = if (isActive) dotSize * activeWidthRatio else dotSize,
-                animationSpec = tween(durationMillis = 120, easing = LinearOutSlowInEasing) // Reduced duration to 100 ms
+                animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing) // Reduced duration to 100 ms
             )
 
             val dotColor = if (isActive) activeColor else inactiveColor

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "763368007277-b8ufbt18uv9pbdclpvka1on7m0bn0580.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cashflik_app",
+            "certificate_hash": "651d5f2248765cefbbf2d5a5da473105c0542817"
+          }
+        },
+        {
           "client_id": "763368007277-03rkubjbbtbh9ii1a8kp5iv3s62caf5i.apps.googleusercontent.com",
           "client_type": 3
         }

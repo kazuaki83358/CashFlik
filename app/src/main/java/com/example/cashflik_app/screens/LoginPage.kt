@@ -52,6 +52,7 @@ fun LoginPage(
             modifier = Modifier
                 .size(140.dp)
                 .padding(top = 60.dp)
+                .align(Alignment.CenterHorizontally) // Center the Image horizontally
         )
 
         // Login Card

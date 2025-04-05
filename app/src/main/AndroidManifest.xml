@@ -9,9 +9,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/cashflik"
+        android:icon="@mipmap/c_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/cashflik"
+        android:roundIcon="@mipmap/c_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.CashflikApp"
         tools:targetApi="33">

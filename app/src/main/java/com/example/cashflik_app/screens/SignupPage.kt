@@ -1,7 +1,7 @@
 package com.example.cashflik_app.screens
 
 import android.app.Activity
-import android.util.Patterns
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,13 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.cashflik_app.R
@@ -45,11 +42,9 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = CustomBlueColor),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+            .background(CustomBlueColor),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Top Section (Logo)
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo",
@@ -58,7 +53,6 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
                 .padding(top = 60.dp)
         )
 
-        // Signup Card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -70,47 +64,33 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Title
                 Text(
                     text = "CREATE NEW ACCOUNT",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                 )
+
                 Text(
                     text = "Welcome back, you've been missed!",
                     style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray),
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Input Fields
-                InputField(
-                    value = name,
-                    label = "Name",
-                    icon = R.drawable.ic_person,
-                    onValueChange = { name = it.trim() }
-                )
-                InputField(
-                    value = mobileNumber,
-                    label = "Mobile Number",
-                    icon = R.drawable.ic_phone,
-                    onValueChange = { mobileNumber = it.trim() }
-                )
-                InputField(
-                    value = password,
-                    label = "Password",
-                    icon = R.drawable.ic_lock,
-                    isPassword = true,
-                    onValueChange = { password = it.trim() }
-                )
-                InputField(
-                    value = confirmPassword,
-                    label = "Confirm Password",
-                    icon = R.drawable.ic_lock,
-                    isPassword = true,
-                    onValueChange = { confirmPassword = it.trim() }
-                )
+                InputField(value = name, label = "Name", icon = R.drawable.ic_person) {
+                    name = it.trim()
+                }
 
-                // Signup Button
+                InputField(value = mobileNumber, label = "Mobile Number", icon = R.drawable.ic_phone) {
+                    mobileNumber = it.trim()
+                }
+
+                InputField(value = password, label = "Password", icon = R.drawable.ic_lock, isPassword = true) {
+                    password = it.trim()
+                }
+
+                InputField(value = confirmPassword, label = "Confirm Password", icon = R.drawable.ic_lock, isPassword = true) {
+                    confirmPassword = it.trim()
+                }
+
                 Button(
                     onClick = {
                         if (!isValidMobileNumber(mobileNumber)) {
@@ -129,41 +109,45 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
                                 phoneNumber = mobileNumber,
                                 activity = activity,
                                 onCodeSent = { verificationId ->
-                                    navController.navigate("otp/$mobileNumber/$password/$verificationId/$name") // Include name here
+                                    Log.d("SignupDebug", "OTP sent. Navigating to OTP screen with phone=$mobileNumber, name=$name")
+                                    navController.navigate("otp/$mobileNumber/$password/$verificationId/$name")
                                 },
                                 onError = { error ->
                                     Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                                    Log.e("SignupError", "OTP sending failed: $error")
                                 }
                             )
                         } else {
-                            Toast.makeText(context, "Error: Context is not an Activity", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Context error. Please try again.", Toast.LENGTH_SHORT).show()
                         }
                     },
-
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    enabled = !isLoading
+                    enabled = !isLoading,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Text(text = if (isLoading) "Loading..." else "Signup", color = Color.White)
                 }
 
-                // Login Link
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(text = "Already have an account? ")
+                    Text(text = "Already have an account?")
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "Log in",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = Color.Blue,
                             textDecoration = TextDecoration.Underline
                         ),
-                        modifier = Modifier.clickable(onClick = { navController.navigate("login") }, role = Role.Button)
+                        modifier = Modifier.clickable(
+                            onClick = { navController.navigate("login") },
+                            role = Role.Button
+                        )
                     )
                 }
             }
@@ -190,7 +174,8 @@ fun InputField(
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.Black),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = if (isPassword) androidx.compose.ui.text.input.KeyboardType.Password else androidx.compose.ui.text.input.KeyboardType.Text
+            keyboardType = if (isPassword) androidx.compose.ui.text.input.KeyboardType.Password
+            else androidx.compose.ui.text.input.KeyboardType.Text
         ),
         leadingIcon = {
             Icon(
@@ -209,13 +194,13 @@ fun InputField(
     )
 }
 
-// Function to validate mobile number format
 fun isValidMobileNumber(mobileNumber: String): Boolean {
-    val phoneNumberUtil = PhoneNumberUtil.getInstance()
+    val phoneUtil = PhoneNumberUtil.getInstance()
     return try {
-        val parsedNumber = phoneNumberUtil.parse(mobileNumber, "IN") // "IN" for India
-        phoneNumberUtil.isValidNumber(parsedNumber)
+        val parsedNumber = phoneUtil.parse(mobileNumber, "IN")
+        phoneUtil.isValidNumber(parsedNumber)
     } catch (e: Exception) {
+        Log.e("PhoneValidation", "Invalid number: $mobileNumber", e)
         false
     }
 }

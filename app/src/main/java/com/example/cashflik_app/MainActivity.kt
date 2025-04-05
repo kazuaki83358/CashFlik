@@ -12,7 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.cashflik_app.screens.*
-import com.example.profile_screen.ProfileScreen
+import com.example.cashflik_app.screens.ProfileScreen
 import com.example.cashflik_app.ui.theme.CashflikAppTheme
 import com.example.cashflik_app.viewmodel.SignupViewModel
 

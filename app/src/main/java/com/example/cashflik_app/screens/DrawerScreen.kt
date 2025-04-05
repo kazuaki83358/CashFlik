@@ -71,19 +71,40 @@ fun DrawerScreen(navController: NavController, modifier: Modifier = Modifier) {
             style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 16.sp),
             modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
         )
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_email), // Replace with your email icon
-                contentDescription = "Email",
-                modifier = Modifier.size(20.dp),
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "flikcash1@gmail.com", fontSize = 14.sp)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_email), // Replace with your email icon
+                    contentDescription = "Email",
+                    modifier = Modifier.size(20.dp),
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(text = "flikcash1@gmail.com", fontSize = 14.sp)
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_website), // Replace with your website icon
+                    contentDescription = "Website",
+                    modifier = Modifier.size(20.dp),
+                )
+                Spacer(modifier = Modifier.width(20.dp))
+                Text(text = "www.cashflik.com", fontSize = 14.sp)
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_phone), // Replace with your phone icon
+                    contentDescription = "Phone",
+                    modifier = Modifier.size(20.dp),
+                )
+                Spacer(modifier = Modifier.width(20.dp))
+                Text(text = "9034340417", fontSize = 14.sp)
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f)) // Push Logout to the bottom

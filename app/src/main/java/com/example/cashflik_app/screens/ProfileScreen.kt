@@ -1,4 +1,4 @@
-package com.example.profile_screen
+package com.example.cashflik_app.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,14 +28,14 @@ import androidx.activity.compose.BackHandler
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController) {
-    var name by remember { mutableStateOf("Laura Hernandez") }
-    var mobileNumber by remember { mutableStateOf("+91-9876543210") }
-    var emailId by remember { mutableStateOf("Laura@gmail.com") }
+    var name by remember { mutableStateOf("Yash Jadam") }
+    var mobileNumber by remember { mutableStateOf("+91-9034340417") }
+    var emailId by remember { mutableStateOf("Yash@gmail.com") }
     var address by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
     var pincode by remember { mutableStateOf("") }
     var dob by remember { mutableStateOf("") }
-    var gender by remember { mutableStateOf("Female") }
+    var gender by remember { mutableStateOf("male") }
     var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
