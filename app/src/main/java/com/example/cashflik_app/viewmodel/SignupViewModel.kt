@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
 
 class SignupViewModel : ViewModel() {
@@ -26,53 +27,43 @@ class SignupViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    // Step 1: Send OTP for Phone Verification
+    // Step 1: Send OTP
     fun sendOtp(
         phoneNumber: String,
         activity: Activity,
         onCodeSent: (String) -> Unit,
         onError: (String) -> Unit
     ) {
-        viewModelScope.launch {
-            _isLoading.value = true
+        _isLoading.value = true
 
-            try {
-                val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                    override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                        Log.d("SignupViewModel", "OTP Auto-Verified")
-                        _isLoading.value = false
-                    }
-
-                    override fun onVerificationFailed(e: FirebaseException) {
-                        _isLoading.value = false
-                        Log.e("SignupViewModel", "OTP verification failed", e)
-                        onError(e.localizedMessage ?: "OTP Verification failed")
-                    }
-
-                    override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
-                        verificationId = id
-                        _isLoading.value = false
-                        Log.d("SignupViewModel", "OTP code sent successfully")
-                        onCodeSent(id)
-                    }
-                }
-
-                val options = PhoneAuthOptions.newBuilder(auth)
-                    .setPhoneNumber(phoneNumber)
-                    .setTimeout(60L, TimeUnit.SECONDS)
-                    .setActivity(activity)
-                    .setCallbacks(callbacks)
-                    .build()
-
-                // This is safe to call inside coroutine
-                PhoneAuthProvider.verifyPhoneNumber(options)
-
-            } catch (e: Exception) {
+        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                Log.d("SignupViewModel", "OTP Auto-Verified")
                 _isLoading.value = false
-                Log.e("SignupViewModel", "Exception during sendOtp", e)
-                onError(e.localizedMessage ?: "Failed to start OTP verification")
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                _isLoading.value = false
+                Log.e("SignupViewModel", "OTP verification failed", e)
+                onError(e.localizedMessage ?: "OTP Verification failed")
+            }
+
+            override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
+                verificationId = id
+                _isLoading.value = false
+                Log.d("SignupViewModel", "OTP code sent successfully")
+                onCodeSent(id)
             }
         }
+
+        val options = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(activity)
+            .setCallbacks(callbacks)
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
     // Step 2: Verify OTP
@@ -85,80 +76,59 @@ class SignupViewModel : ViewModel() {
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        val id = verificationId
-        if (id.isEmpty()) {
+        if (verificationId.isEmpty()) {
             onError("Invalid verification ID")
             return
         }
 
-        _isLoading.value = true
-        val credential = PhoneAuthProvider.getCredential(id, otp)
-        signInWithCredential(credential, phoneNumber, password, name, onSuccess, onError)
-    }
+        val credential = PhoneAuthProvider.getCredential(verificationId, otp)
 
-    // Step 3: Sign in with Phone Credential
-    private fun signInWithCredential(
-        credential: PhoneAuthCredential,
-        phoneNumber: String,
-        password: String,
-        name: String,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
-    ) {
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val user = task.result?.user
-                    user?.let {
-                        registerUserInAuth(phoneNumber, password, name, it.uid, onSuccess, onError)
-                    }
-                } else {
-                    _isLoading.value = false
-                    onError(task.exception?.localizedMessage ?: "Sign in failed")
-                }
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val authResult = auth.signInWithCredential(credential).await()
+                val phoneAuthUid = authResult.user?.uid ?: throw Exception("UID not found")
+                handleUserCreation(phoneNumber, password, name, phoneAuthUid, onSuccess, onError)
+            } catch (e: Exception) {
+                Log.e("SignupViewModel", "OTP Sign-in failed", e)
+                _isLoading.value = false
+                onError(e.localizedMessage ?: "Sign-in failed")
             }
+        }
     }
 
-    // Step 4: Register Email/Password User and Store Data (using Email UID)
-    private fun registerUserInAuth(
+    // Step 3: Handle Firebase Auth and Firestore save
+    private suspend fun handleUserCreation(
         phoneNumber: String,
         password: String,
         name: String,
-        phoneAuthUid: String, // Phone auth UID
+        phoneAuthUid: String,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         val email = "$phoneNumber@cashflik.com"
 
-        auth.fetchSignInMethodsForEmail(email)
-            .addOnCompleteListener { authTask ->
-                if (authTask.isSuccessful) {
-                    val methods = authTask.result?.signInMethods
-                    if (methods.isNullOrEmpty()) {
-                        // User does not exist, create email/password account
-                        auth.createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener { registerTask ->
-                                if (registerTask.isSuccessful) {
-                                    // Use email/password user UID
-                                    saveUserToFirestore(registerTask.result?.user?.uid ?: phoneAuthUid, phoneNumber, name, onSuccess, onError)
-                                } else {
-                                    _isLoading.value = false
-                                    onError(registerTask.exception?.localizedMessage ?: "Auth registration failed")
-                                }
-                            }
-                    } else {
-                        // User already exists, just store data (using email UID)
-                        saveUserToFirestore(auth.currentUser?.uid ?: phoneAuthUid, phoneNumber, name, onSuccess, onError)
-                    }
-                } else {
-                    _isLoading.value = false
-                    onError(authTask.exception?.localizedMessage ?: "Error checking existing account")
-                }
+        try {
+            val signInMethods = auth.fetchSignInMethodsForEmail(email).await().signInMethods ?: emptyList()
+
+            val uid = if (signInMethods.isEmpty()) {
+                val user = auth.createUserWithEmailAndPassword(email, password).await().user
+                user?.uid ?: throw Exception("Email auth UID not found")
+            } else {
+                auth.currentUser?.uid ?: phoneAuthUid
             }
+
+            saveUserToFirestore(uid, phoneNumber, name, onSuccess, onError)
+
+        } catch (e: Exception) {
+            Log.e("SignupViewModel", "Auth error", e)
+            _isLoading.value = false
+            onError(e.localizedMessage ?: "Registration failed")
+        }
     }
 
-    // Step 5: Store User Data in Firestore (using Email UID)
-    private fun saveUserToFirestore(
+    // Step 4: Save user in Firestore
+    private suspend fun saveUserToFirestore(
         uid: String,
         phone: String,
         name: String,
@@ -177,19 +147,15 @@ class SignupViewModel : ViewModel() {
             gender = ""
         )
 
-        viewModelScope.launch {
-            db.collection("users").document(uid)
-                .set(user)
-                .addOnSuccessListener {
-                    Log.d("SignupViewModel", "User stored successfully (using email UID)")
-                    _isLoading.value = false
-                    onSuccess()
-                }
-                .addOnFailureListener { e ->
-                    _isLoading.value = false
-                    Log.e("SignupViewModel", "Error storing user: ", e)
-                    onError("Failed to store user data")
-                }
+        try {
+            db.collection("users").document(uid).set(user).await()
+            Log.d("SignupViewModel", "User saved to Firestore")
+            onSuccess()
+        } catch (e: Exception) {
+            Log.e("SignupViewModel", "Firestore error", e)
+            onError("Failed to store user data")
+        } finally {
+            _isLoading.value = false
         }
     }
 }

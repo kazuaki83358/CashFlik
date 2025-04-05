@@ -40,6 +40,34 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
     var confirmPassword by remember { mutableStateOf("") }
     val isLoading by signupViewModel.isLoading.collectAsState()
 
+    // ✅ Triggers OTP logic after frame is drawn
+    var triggerOtp by remember { mutableStateOf(false) }
+    var otpPhone by remember { mutableStateOf("") }
+    var otpName by remember { mutableStateOf("") }
+    var otpPassword by remember { mutableStateOf("") }
+
+    LaunchedEffect(triggerOtp) {
+        if (triggerOtp) {
+            val activity = context as? Activity
+            if (activity != null) {
+                signupViewModel.sendOtp(
+                    phoneNumber = otpPhone,
+                    activity = activity,
+                    onCodeSent = { verificationId ->
+                        navController.navigate("otp/$otpPhone/$otpPassword/$verificationId/$otpName")
+                    },
+                    onError = { error ->
+                        Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                        Log.e("SignupError", "OTP sending failed: $error")
+                    }
+                )
+            } else {
+                Toast.makeText(context, "Context error. Please try again.", Toast.LENGTH_SHORT).show()
+            }
+            triggerOtp = false
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -113,23 +141,11 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
                             return@Button
                         }
 
-                        val activity = context as? Activity
-                        if (activity != null) {
-                            signupViewModel.sendOtp(
-                                phoneNumber = formattedPhone,
-                                activity = activity,
-                                onCodeSent = { verificationId ->
-                                    Log.d("SignupDebug", "OTP sent. Navigating to OTP screen with phone=$formattedPhone, name=$name")
-                                    navController.navigate("otp/$formattedPhone/$password/$verificationId/$name")
-                                },
-                                onError = { error ->
-                                    Toast.makeText(context, error, Toast.LENGTH_LONG).show()
-                                    Log.e("SignupError", "OTP sending failed: $error")
-                                }
-                            )
-                        } else {
-                            Toast.makeText(context, "Context error. Please try again.", Toast.LENGTH_SHORT).show()
-                        }
+                        // ✅ Prepare data and trigger OTP
+                        otpPhone = formattedPhone
+                        otpName = name
+                        otpPassword = password
+                        triggerOtp = true
                     },
                     modifier = Modifier
                         .fillMaxWidth()
