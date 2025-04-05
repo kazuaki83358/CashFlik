@@ -2,9 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Internet & Network Permissions -->
+    <!-- 🔐 Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -14,8 +15,16 @@
         android:roundIcon="@mipmap/c_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.CashflikApp"
+        android:usesCleartextTraffic="false"
         tools:targetApi="33">
 
+        <!-- 🚀 Firebase ReCAPTCHA Activity (required for PhoneAuthProvider) -->
+        <activity
+            android:name="com.google.firebase.auth.internal.RecaptchaActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <!-- 📱 Your Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -29,5 +38,4 @@
         </activity>
 
     </application>
-
 </manifest>

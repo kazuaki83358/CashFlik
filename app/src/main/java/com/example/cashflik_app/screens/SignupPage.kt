@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -79,8 +80,15 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
                     name = it.trim()
                 }
 
-                InputField(value = mobileNumber, label = "Mobile Number", icon = R.drawable.ic_phone) {
-                    mobileNumber = it.trim()
+                InputField(
+                    value = mobileNumber,
+                    label = "Mobile Number",
+                    icon = R.drawable.ic_phone,
+                    keyboardType = KeyboardType.Number
+                ) {
+                    if (it.length <= 10 && it.all { ch -> ch.isDigit() }) {
+                        mobileNumber = it.trim()
+                    }
                 }
 
                 InputField(value = password, label = "Password", icon = R.drawable.ic_lock, isPassword = true) {
@@ -93,8 +101,10 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
 
                 Button(
                     onClick = {
-                        if (!isValidMobileNumber(mobileNumber)) {
-                            Toast.makeText(context, "Enter a valid mobile number with +91", Toast.LENGTH_LONG).show()
+                        val formattedPhone = if (mobileNumber.startsWith("+91")) mobileNumber else "+91$mobileNumber"
+
+                        if (!isValidMobileNumber(formattedPhone)) {
+                            Toast.makeText(context, "Enter a valid 10-digit mobile number", Toast.LENGTH_LONG).show()
                             return@Button
                         }
 
@@ -106,11 +116,11 @@ fun SignupPage(navController: NavController, signupViewModel: SignupViewModel = 
                         val activity = context as? Activity
                         if (activity != null) {
                             signupViewModel.sendOtp(
-                                phoneNumber = mobileNumber,
+                                phoneNumber = formattedPhone,
                                 activity = activity,
                                 onCodeSent = { verificationId ->
-                                    Log.d("SignupDebug", "OTP sent. Navigating to OTP screen with phone=$mobileNumber, name=$name")
-                                    navController.navigate("otp/$mobileNumber/$password/$verificationId/$name")
+                                    Log.d("SignupDebug", "OTP sent. Navigating to OTP screen with phone=$formattedPhone, name=$name")
+                                    navController.navigate("otp/$formattedPhone/$password/$verificationId/$name")
                                 },
                                 onError = { error ->
                                     Toast.makeText(context, error, Toast.LENGTH_LONG).show()
@@ -162,6 +172,7 @@ fun InputField(
     label: String,
     icon: Int,
     isPassword: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text,
     onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
@@ -173,10 +184,7 @@ fun InputField(
             .padding(bottom = 8.dp),
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.Black),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = if (isPassword) androidx.compose.ui.text.input.KeyboardType.Password
-            else androidx.compose.ui.text.input.KeyboardType.Text
-        ),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType),
         leadingIcon = {
             Icon(
                 painter = painterResource(id = icon),

@@ -33,34 +33,46 @@ class SignupViewModel : ViewModel() {
         onCodeSent: (String) -> Unit,
         onError: (String) -> Unit
     ) {
-        _isLoading.value = true
+        viewModelScope.launch {
+            _isLoading.value = true
 
-        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                Log.d("SignupViewModel", "OTP Auto-Verified")
-                _isLoading.value = false
-            }
+            try {
+                val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                    override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                        Log.d("SignupViewModel", "OTP Auto-Verified")
+                        _isLoading.value = false
+                    }
 
-            override fun onVerificationFailed(e: FirebaseException) {
-                _isLoading.value = false
-                onError(e.localizedMessage ?: "OTP Verification failed")
-            }
+                    override fun onVerificationFailed(e: FirebaseException) {
+                        _isLoading.value = false
+                        Log.e("SignupViewModel", "OTP verification failed", e)
+                        onError(e.localizedMessage ?: "OTP Verification failed")
+                    }
 
-            override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
-                verificationId = id
+                    override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
+                        verificationId = id
+                        _isLoading.value = false
+                        Log.d("SignupViewModel", "OTP code sent successfully")
+                        onCodeSent(id)
+                    }
+                }
+
+                val options = PhoneAuthOptions.newBuilder(auth)
+                    .setPhoneNumber(phoneNumber)
+                    .setTimeout(60L, TimeUnit.SECONDS)
+                    .setActivity(activity)
+                    .setCallbacks(callbacks)
+                    .build()
+
+                // This is safe to call inside coroutine
+                PhoneAuthProvider.verifyPhoneNumber(options)
+
+            } catch (e: Exception) {
                 _isLoading.value = false
-                onCodeSent(id)
+                Log.e("SignupViewModel", "Exception during sendOtp", e)
+                onError(e.localizedMessage ?: "Failed to start OTP verification")
             }
         }
-
-        val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(activity)
-            .setCallbacks(callbacks)
-            .build()
-
-        PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
     // Step 2: Verify OTP
